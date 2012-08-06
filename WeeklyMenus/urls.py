@@ -8,9 +8,12 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'WeeklyMenus.views.home', name='home'),
     # url(r'^WeeklyMenus/', include('WeeklyMenus.foo.urls')),
+    url(r'^$', 'menumanager.views.index'),
+    url(r'^recipes/', include('recipemanager.urls')),
+    url(r'^menus/', include('menumanager.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
