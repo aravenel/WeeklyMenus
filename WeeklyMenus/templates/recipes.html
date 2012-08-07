@@ -27,11 +27,41 @@
 <div class="row">
     <div class="span6">
         <h1>Most Frequently Made</h1>
-        {{ popular_recipes }}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Times Made</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in popular_recipes %}
+                <tr>
+                    <td>{{recipe.title}}</td>
+                    <td>{{recipe.made_count}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
     <div class="span6">
         <h1>Most Recent</h1>
-        {{ recent_recipes }}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Added</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in recent_recipes %}
+                <tr>
+                    <td>{{recipe.title}}</td>
+                    <td>{{recipe.added}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
