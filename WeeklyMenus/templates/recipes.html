@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h1>Add a New Recipe</h1>
+        {% load bootstrap_toolkit %}
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ add_form|as_bootstrap }}
+            <div class="actions">
+                <button type="submit" class="btn primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span6">
+        <h1>Most Frequently Made</h1>
+        {{ popular_recipes }}
+    </div>
+    <div class="span6">
+        <h1>Most Recent</h1>
+        {{ recent_recipes }}
+    </div>
+</div>
+
+{% endblock %}

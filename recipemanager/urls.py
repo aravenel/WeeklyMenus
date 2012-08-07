@@ -6,7 +6,7 @@ urlpatterns = patterns('',
     # url(r'^WeeklyMenus/', include('WeeklyMenus.foo.urls')),
     #url(r'^recipes/', include('recipes.urls')),
     #url(r'^menus/', include('menus.urls')),
-    url(r'^/$', 'recipemanager.views.index'),
-    url(r'^add/$', 'recipemanager.views.add'),
-    url(r'^(?P<recipe_id>\d)/$', 'recipemanager.views.edit')
+    url(r'^$', 'recipemanager.views.index'),
+    url(r'^add$', 'recipemanager.views.add'),
+    #url(r'^(?P<recipe_id>\d)/$', 'recipemanager.views.edit')
 )
