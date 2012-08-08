@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     #'bootstrap_toolkit',
     'crispy_forms',
+    'south',
     'debug_toolbar',
     'menumanager',
     'recipemanager',
