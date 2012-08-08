@@ -11,27 +11,22 @@
 
 <div class="row">
     <div class="span12">
-        <h1>Add a New Recipe</h1>
-        {% load bootstrap_toolkit %}
+        <h2>Add a New Recipe</h2>
+        {% load crispy_forms_tags %}
 
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ add_form|as_bootstrap }}
-            <div class="actions">
-                <button type="submit" class="btn primary">Submit</button>
-            </div>
-        </form>
+        {% crispy add_form %}
     </div>
 </div>
 
 <div class="row">
     <div class="span6">
-        <h1>Most Frequently Made</h1>
+        <h2>Most Frequently Made</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Recipe</th>
                     <th>Times Made</th>
+                    <th>Link</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,18 +34,20 @@
                 <tr>
                     <td>{{recipe.title}}</td>
                     <td>{{recipe.made_count}}</td>
+                    <td><a href="{{recipe.url}}">Link</a></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
     <div class="span6">
-        <h1>Most Recent</h1>
+        <h2>Most Recent</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Recipe</th>
                     <th>Added</th>
+                    <th>Link</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +55,7 @@
                 <tr>
                     <td>{{recipe.title}}</td>
                     <td>{{recipe.added}}</td>
+                    <td><a href="{{recipe.url}}">Link</a></td>
                 </tr>
             {% endfor %}
             </tbody>

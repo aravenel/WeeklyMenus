@@ -128,7 +128,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'bootstrap_toolkit',
+    #'bootstrap_toolkit',
+    'crispy_forms',
     'debug_toolbar',
     'menumanager',
     'recipemanager',

@@ -13,16 +13,18 @@ def index(request):
     else:
         add_form = RecipeForm()
 
-    recent_recipes = Recipe.objects.order_by('last_made')[:5]
+    recent_recipes = Recipe.objects.order_by('-last_made')[:5]
     popular_recipes = Recipe.objects.order_by('made_count')[:5]
 
-    return render_to_response('recipes.html',
-        {
-            'add_form': add_form,
-            'recent_recipes': recent_recipes,
-            'popular_recipes': popular_recipes,
-        },
-        context_instance=RequestContext(request))
+    return render_to_response(
+            'recipes.html',
+            {
+                'add_form': add_form,
+                'recent_recipes': recent_recipes,
+                'popular_recipes': popular_recipes,
+            },
+            context_instance=RequestContext(request)
+            )
 
 def add(request):
     if request.method == 'POST':
