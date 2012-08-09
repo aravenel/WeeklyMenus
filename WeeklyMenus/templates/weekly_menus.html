@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+<script type="text/JavaScript">
+    $(document).ready(function(){
+        $('.datepicker').datepicker({
+                format: 'mm/dd/yyyy'
+                });
+            })
+</script>
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2>Add a New Weekly Menu</h2>
+        {% load crispy_forms_tags %}
+
+        {% crispy weekly_menu_form %}
+    </div>
+    <div class="span12">
+        <h2>Current Menu</h2>
+        {% if current_menu != None %}
+            {{ current_menu }}
+        {% else %}
+            <p>No current menu! Why don't you add one?</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
