@@ -1,6 +1,5 @@
-from menumanager.models import WeeklyMenu, Menu, MenuItem
+from menumanager.models import WeeklyMenu, MenuItem
 from django.contrib import admin
 
 admin.site.register(WeeklyMenu)
-admin.site.register(Menu)
 admin.site.register(MenuItem)

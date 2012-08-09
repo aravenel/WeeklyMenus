@@ -21,9 +21,11 @@ def index(request):
     all_menus = WeeklyMenu.objects.all()
     today = datetime.date.today()
     current_menu = None
+    menu_dict = None
     for menu in all_menus:
         if today >= menu.start_date and today <= menu.end_date:
             current_menu = menu
+            menu_dict = current_menu.build_menu_dict()
             break
 
     return render_to_response(
@@ -31,6 +33,7 @@ def index(request):
             {
                 'weekly_menu_form': weekly_menu_form,
                 'current_menu': current_menu,
+                'menu_dict': menu_dict,
             },
             context_instance=RequestContext(request)
             )

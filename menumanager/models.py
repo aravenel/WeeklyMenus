@@ -24,25 +24,15 @@ class WeeklyMenu(models.Model):
         #Dict to contain final values
         menu_dict = {}
         #All related menu items
-        menus = Menu.objects.filter(weekly_menu=self)
-
-        md = {}
-        for menu in menus:
-
-            #Setup the sub dict if needed
-            if menu.menu_date not in md.keys():
-                md[menu.menu_date] = {}
-
-            for meal in range(0, 3):
-                pass
+        menus = MenuItem.objects.filter(menu=self)
 
         for date in daterange(self.start_date, self.end_date + datetime.timedelta(1)):
             menu_dict[date] = {}
-            for menu in menus:
-                if menu.menu_date == date:
-                    pass
-
-
+            for meal in range(0, 3):
+                items = menus.filter(menu_date = date, menu_type = meal)
+                if len(items) == 0:
+                    items = None
+                menu_dict[date][meal] = items
 
 class WeeklyMenuForm(ModelForm):
     #Form to add a new weekly menu
@@ -66,12 +56,12 @@ class WeeklyMenuForm(ModelForm):
 
         super(WeeklyMenuForm, self).__init__(*args, **kwargs)
 
-class Menu(models.Model):
-    #Individual menu--breakfast, lunch, or dinner
-    weekly_menu = models.ForeignKey('WeeklyMenu')
+class MenuItem(models.Model):
+    #Item that belongs to a menu. Can have multiple items on a menu
+    menu = models.ForeignKey('WeeklyMenu')
     menu_date = models.DateField()
-    #0 = Breakfast, 1 = Lunch, 2 = Dinner
     menu_type = models.IntegerField()
+    recipe = models.ForeignKey('recipemanager.Recipe')
 
     def __unicode__(self):
         type_mapping = {
@@ -81,8 +71,3 @@ class Menu(models.Model):
                 }
 
         return "%s %s" % (type_mapping[self.menu_type], self.menu_date)
-
-class MenuItem(models.Model):
-    #Item that belongs to a menu. Can have multiple items on a menu
-    menu = models.ForeignKey('Menu')
-    recipe = models.ForeignKey('recipemanager.Recipe')
