@@ -3,6 +3,11 @@ from menumanager.models import WeeklyMenu, WeeklyMenuForm
 from django.template import RequestContext
 import datetime
 
+#Helper functions
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + datetime.timedelta(n)
+
 # Create your views here.
 def index(request):
     if request.method == 'POST':

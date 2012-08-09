@@ -3,6 +3,12 @@ from django.forms import ModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field
+import datetime
+
+#Helper functions
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + datetime.timedelta(n)
 
 # Create your models here.
 class WeeklyMenu(models.Model):
@@ -12,6 +18,31 @@ class WeeklyMenu(models.Model):
 
     def __unicode__(self):
         return "Weekly Menu %s to %s" % (self.start_date, self.end_date)
+
+    def build_menu_dict(self):
+        """Build a nested dict containing all menu items for WeeklyMenu"""
+        #Dict to contain final values
+        menu_dict = {}
+        #All related menu items
+        menus = Menu.objects.filter(weekly_menu=self)
+
+        md = {}
+        for menu in menus:
+
+            #Setup the sub dict if needed
+            if menu.menu_date not in md.keys():
+                md[menu.menu_date] = {}
+
+            for meal in range(0, 3):
+                pass
+
+        for date in daterange(self.start_date, self.end_date + datetime.timedelta(1)):
+            menu_dict[date] = {}
+            for menu in menus:
+                if menu.menu_date == date:
+                    pass
+
+
 
 class WeeklyMenuForm(ModelForm):
     #Form to add a new weekly menu
@@ -24,6 +55,7 @@ class WeeklyMenuForm(ModelForm):
         self.helper.form_class = 'well form-inline'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+        #self.helper.form_style = 'inline'
         self.helper.layout = Layout(
                 Field('start_date', css_class='datepicker'),
                 Field('end_date', css_class='datepicker'),
