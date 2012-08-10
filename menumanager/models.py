@@ -22,17 +22,25 @@ class WeeklyMenu(models.Model):
     def build_menu_dict(self):
         """Build a nested dict containing all menu items for WeeklyMenu"""
         #Dict to contain final values
-        menu_dict = {}
+        menu_dict = []
         #All related menu items
         menus = MenuItem.objects.filter(menu=self)
+        #Force queryset to be evaluated so it is cached
+        menus = list(menus)
 
         for date in daterange(self.start_date, self.end_date + datetime.timedelta(1)):
-            menu_dict[date] = {}
+            md = {}
+            md['date'] = date
             for meal in range(0, 3):
-                items = menus.filter(menu_date = date, menu_type = meal)
+                #items = menus.filter(menu_date = date, menu_type = meal)
+                items = [menu for menu in menus if menu.menu_date == date
+                        and menu.menu_type == meal]
                 if len(items) == 0:
                     items = None
-                menu_dict[date][meal] = items
+                md[meal] = items
+            menu_dict.append(md)
+
+        return menu_dict
 
 class WeeklyMenuForm(ModelForm):
     #Form to add a new weekly menu
