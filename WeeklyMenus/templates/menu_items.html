@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2>Current Menu Items</h2>
+        {% if current_recipes|length > 0 %}
+            {% for menuitem in current_recipes %}
+                <p>{{ menuitem.recipe.title }}</p>
+            {% endfor %}
+        {% else %}
+            <p>No recipes added to menu!</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span6">
+        <h2>Most Frequently Made</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Times Made</th>
+                    <th>Add to Menu</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in popular_recipes %}
+                <tr>
+                    <td>{{recipe.title}}</td>
+                    <td>{{recipe.made_count}}</td>
+                    <td><a href="./add/{{recipe.id}}?next={{request.path}}">Add</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="span6">
+        <h2>Most Recent</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Added</th>
+                    <th>Add to Menu</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in recent_recipes %}
+                <tr>
+                    <td>{{recipe.title}}</td>
+                    <td>{{recipe.added}}</td>
+                    <td><a href="./add/{{recipe.id}}">Add</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
