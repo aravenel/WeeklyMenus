@@ -1,0 +1,49 @@
+<table class='table table-striped'>
+    <thead>
+        <th></th>
+        <th>Breakfast</th>
+        <th>Lunch</th>
+        <th>Dinner</th>
+    </thead>
+    <tbody>
+        {% for md in menu_dict|dictsort:"date" %}
+        <tr>
+            <td>{{ md.date }}</td>
+
+            {# Well this is ugly... #}
+            {% if md.0 == None %}
+            <td><p><a href="../menus/new/{{md.date}}/0">Add To Menu</a></p></td>
+            {% else %}
+            <td><p>
+                {% for item in md.0 %}
+                {{ item.recipe.title }}<br />
+                {% endfor %}
+                <a href="../menus/new/{{md.date}}/0">Add to Menu</a>
+            </p></td>
+            {% endif %}
+
+            {% if md.1 == None %}
+            <td><p><a href="../menus/new/{{md.date}}/1">Add To Menu</a></p></td>
+            {% else %}
+            <td><p>
+                {% for item in md.1 %}
+                {{ item.recipe.title }}<br />
+                {% endfor %}
+                <a href="../menus/new/{{md.date}}/1">Add to Menu</a>
+            </p></td>
+            {% endif %}
+
+            {% if md.2 == None %}
+            <td><p><a href="../menus/new/{{md.date}}/2">Add To Menu</a></p></td>
+            {% else %}
+            <td><p>
+                {% for item in md.2 %}
+                {{ item.recipe.title }}<br />
+                {% endfor %}
+                <a href="../menus/new/{{md.date}}/2">Add to Menu</a>
+            </p></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
