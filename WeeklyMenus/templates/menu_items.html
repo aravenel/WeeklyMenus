@@ -13,9 +13,14 @@
     <div class="span12">
         <h2>Current Menu Items</h2>
         {% if current_recipes|length > 0 %}
+        <table><tbody>
             {% for menuitem in current_recipes %}
-                <p>{{ menuitem.recipe.title }}</p>
+            <tr>
+                <td>{{ menuitem.recipe.title }}</td>
+                <td><a class="btn btn-mini btn-danger" href="/menus/delete/{{menuitem.id}}">Delete</a></td>
+            </td>
             {% endfor %}
+        </tbody></table>
         {% else %}
             <p>No recipes added to menu!</p>
         {% endif %}
@@ -30,7 +35,6 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Times Made</th>
-                    <th>Add to Menu</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +42,7 @@
                 <tr>
                     <td>{{recipe.title}}</td>
                     <td>{{recipe.made_count}}</td>
-                    <td><a href="./add/{{recipe.id}}?next={{request.path}}">Add</a></td>
+                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -51,7 +55,6 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Added</th>
-                    <th>Add to Menu</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,7 +62,7 @@
                 <tr>
                     <td>{{recipe.title}}</td>
                     <td>{{recipe.added}}</td>
-                    <td><a href="./add/{{recipe.id}}">Add</a></td>
+                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}">Add to Menu</a></td>
                 </tr>
             {% endfor %}
             </tbody>

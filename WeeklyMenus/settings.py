@@ -180,3 +180,5 @@ INTERNAL_IPS = ('127.0.0.1')
 DEBUG_TOOLBAR_CONFIG  = {
         'INTERCEPT_REDIRECTS': False,
         }
+#Make crispy forms fail loudly for debugging
+CRISPY_FAIL_SILENTLY = not DEBUG

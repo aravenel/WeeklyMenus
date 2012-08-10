@@ -31,13 +31,14 @@ class WeeklyMenu(models.Model):
         for date in daterange(self.start_date, self.end_date + datetime.timedelta(1)):
             md = {}
             md['date'] = date
+            md['items'] = []
             for meal in range(0, 3):
                 #items = menus.filter(menu_date = date, menu_type = meal)
                 items = [menu for menu in menus if menu.menu_date == date
                         and menu.menu_type == meal]
                 if len(items) == 0:
                     items = None
-                md[meal] = items
+                md['items'].append(items)
             menu_dict.append(md)
 
         return menu_dict

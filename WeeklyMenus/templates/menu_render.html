@@ -9,40 +9,18 @@
         {% for md in menu_dict|dictsort:"date" %}
         <tr>
             <td>{{ md.date|date:"D, M d Y" }}</td>
-
-            {# Well this is ugly... #}
-            {% if md.0 == None %}
-            <td><p><a href="../menus/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/0">Add To Menu</a></p></td>
-            {% else %}
-            <td><p>
-                {% for item in md.0 %}
-                {{ item.recipe.title }}<br />
-                {% endfor %}
-                <a href="../menus/new/{{current_menu.id}}/{{md.date|date:"Ymd"}}/0">Add to Menu</a>
-            </p></td>
-            {% endif %}
-
-            {% if md.1 == None %}
-            <td><p><a href="../menus/new/{{current_menu.id}}/{{md.date|date:"Ymd"}}/1">Add To Menu</a></p></td>
-            {% else %}
-            <td><p>
-                {% for item in md.1 %}
-                {{ item.recipe.title }}<br />
-                {% endfor %}
-                <a href="../menus/new/{{current_menu.id}}/{{md.date|date:"Ymd"}}/1">Add to Menu</a>
-            </p></td>
-            {% endif %}
-
-            {% if md.2 == None %}
-            <td><p><a href="../menus/new/{{current_menu.id}}/{{md.date|date:"Ymd"}}/2">Add To Menu</a></p></td>
-            {% else %}
-            <td><p>
-                {% for item in md.2 %}
-                {{ item.recipe.title }}<br />
-                {% endfor %}
-                <a href="../menus/new/{{current_menu.id}}/{{md.date|date:"Ymd"}}/2">Add to Menu</a>
-            </p></td>
-            {% endif %}
+            {% for meal in md.items %}
+              {% if meal == None %}
+              <td><p><a class="btn btn-mini btn-primary" href="/menus/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/0">Add Recipes</a></p></td>
+              {% else %}
+              <td><p>
+                  {% for item in meal %}
+                  {{ item.recipe.title }}<a align="right" class="btn btn-mini btn-danger" href="/menus/delete/{{item.id}}">Delete</a><br />
+                  {% endfor %}
+                    <a class="btn btn-mini btn-primary" href="/menus/{{current_menu.id}}/{{md.date|date:"Ymd"}}/0">Edit Menu</a>
+              </p></td>
+              {% endif %}
+            {% endfor %}
         </tr>
         {% endfor %}
     </tbody>
