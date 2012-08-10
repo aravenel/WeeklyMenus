@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-
+<style type="text/css">
+    td {
+        min-width: 75px;
+    }
+</style>
 
 
 {% endblock %}
@@ -17,7 +21,7 @@
             {% for menuitem in current_recipes %}
             <tr>
                 <td>{{ menuitem.recipe.title }}</td>
-                <td><a class="btn btn-mini btn-danger" href="/menus/delete/{{menuitem.id}}">Delete</a></td>
+                <td style="padding-left:10px;"><a class="btn btn-mini btn-danger" href="/menus/delete/{{menuitem.id}}?next={{request.path}}">Delete</a></td>
             </td>
             {% endfor %}
         </tbody></table>
@@ -27,7 +31,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" style="padding-top:20px;">
     <div class="span6">
         <h2>Most Frequently Made</h2>
         <table class="table table-striped">

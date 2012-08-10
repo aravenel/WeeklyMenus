@@ -10,6 +10,12 @@
             })
 </script>
 
+<style type="text/css">
+    td {
+        max-width:150px;
+    }
+</style>
+
 {% endblock %}
 
 
@@ -17,17 +23,53 @@
 
 <div class="row">
     <div class="span12">
-        <h2>Add a New Weekly Menu</h2>
-        {% load crispy_forms_tags %}
-
-        {% crispy weekly_menu_form %}
-    </div>
-    <div class="span12">
         <h2>Current Menu</h2>
         {% if current_menu != None %}
             {% include "menu_render.html" %}
         {% else %}
             <p>No current menu! Why don't you add one?</p>
+        {% endif %}
+    </div>
+</div>
+<div class="row" style="padding-top:20px;">
+    <div class="span4">
+        <h2>Add a New Weekly Menu</h2>
+        {% load crispy_forms_tags %}
+
+        {% crispy weekly_menu_form %}
+    </div>
+    <div class="span4">
+        <h2>Upcoming Menus</h2>
+        {% if upcoming_menus|length > 0 %}
+        <table class="table table-striped">
+            <tbody>
+                {% for menu in upcoming_menus %}
+                <tr>
+                    <td>{{ menu.start_date|date:"m/d/y" }} - {{ menu.end_date|date:"m/d/y" }}</td>
+                    <td style="padding-left:10px;"><a class="btn btn-mini btn-primary" href="/menus/{{menu.id}}">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No upcoming menus.</p>
+        {% endif %}
+    </div>
+    <div class="span4">
+        <h2>Previous Menus</h2>
+        {% if previous_menus|length > 0 %}
+        <table class="table table-striped">
+            <tbody>
+            {% for menu in previous_menus %}
+                <tr>
+                    <td>{{ menu.start_date|date:"m/d/y" }} - {{ menu.end_date|date:"m/d/y" }}</td>
+                    <td style="padding-left:10px;"><a class="btn btn-mini btn-primary" href="/menus/{{menu.id}}">View</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No previous menus.</p>
         {% endif %}
     </div>
 </div>

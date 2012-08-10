@@ -29,12 +29,18 @@ def index(request):
             menu_dict = current_menu.build_menu_dict()
             break
 
+    upcoming_menus = [menu for menu in all_menus if menu.start_date > today]
+    previous_menus = [menu for menu in all_menus if menu.start_date < today and 
+            menu != current_menu]
+
     return render_to_response(
             'weekly_menus.html',
             {
                 'weekly_menu_form': weekly_menu_form,
                 'current_menu': current_menu,
                 'menu_dict': menu_dict,
+                'upcoming_menus': upcoming_menus,
+                'previous_menus': previous_menus,
             },
             context_instance=RequestContext(request)
             )
@@ -65,5 +71,20 @@ def recipe_add(request, weeklymenu_id, menu_date, menu_type, recipe_id):
     next = request.GET.get('next')
     return redirect(next)
 
-def weekly_edit(request):
-    pass
+def item_delete(request, item_id):
+    item = get_object_or_404(MenuItem, pk=item_id)
+    item.delete()
+    next = request.GET.get('next')
+    return redirect(next)
+
+def weekly_menu_view(request, menu_id):
+    menu = get_object_or_404(WeeklyMenu, pk=menu_id)
+    menu_dict = menu.build_menu_dict()
+    return render_to_response(
+            'weekly_menu_view.html',
+            {
+                'current_menu': menu,
+                'menu_dict': menu_dict,
+            },
+            context_instance=RequestContext(request)
+            )

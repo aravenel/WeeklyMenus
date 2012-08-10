@@ -7,9 +7,10 @@ urlpatterns = patterns('',
     #url(r'^recipes/', include('recipes.urls')),
     #url(r'^menus/', include('menus.urls')),
     url(r'^$', 'menumanager.views.index'),
-    url(r'^(?P<weeklymenu_id>\d)/$', 'menumanager.views.weekly_edit'),
+    url(r'delete/(?P<item_id>\d)/$', 'menumanager.views.item_delete'),
+    url(r'(?P<menu_id>\d)/$', 'menumanager.views.weekly_menu_view'),
     url(r'(?P<weeklymenu_id>\d+)/(?P<menu_date>\d+)/(?P<menu_type>\d+)/$',
         'menumanager.views.menu_edit'),
     url(r'(?P<weeklymenu_id>\d+)/(?P<menu_date>\d+)/(?P<menu_type>\d+)/add/(?P<recipe_id>\d+)/$',
-        'menumanager.views.recipe_add')
+        'menumanager.views.recipe_add'),
 )
