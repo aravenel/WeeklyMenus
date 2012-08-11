@@ -11,13 +11,13 @@
             <td>{{ md.date|date:"D, M d Y" }}</td>
             {% for meal in md.items %}
               {% if meal == None %}
-              <td><p><a class="btn btn-mini btn-primary" href="/menus/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a></p></td>
+              <td><p><a class="btn btn-mini btn-primary" href="/menus/edit/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a></p></td>
               {% else %}
               <td><p>
                   {% for item in meal %}
                   {{ item.recipe.title }}<br />
                   {% endfor %}
-                  <a class="btn btn-mini btn-primary" href="/menus/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
+                  <a class="btn btn-mini btn-primary" href="/menus/edit/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
               </p></td>
               {% endif %}
             {% endfor %}

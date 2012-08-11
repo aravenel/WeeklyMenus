@@ -6,6 +6,12 @@ from crispy_forms.layout import Submit, Layout, Field
 import datetime
 
 #Helper functions
+type_mapping = {
+        0: 'Breakfast',
+        1: 'Lunch',
+        2: 'Dinner',
+        }
+
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
         yield start_date + datetime.timedelta(n)
@@ -73,10 +79,4 @@ class MenuItem(models.Model):
     recipe = models.ForeignKey('recipemanager.Recipe')
 
     def __unicode__(self):
-        type_mapping = {
-                0: 'Breakfast',
-                1: 'Lunch',
-                2: 'Dinner',
-                }
-
         return "%s %s" % (type_mapping[self.menu_type], self.menu_date)

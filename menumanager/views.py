@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from menumanager.models import WeeklyMenu, WeeklyMenuForm, MenuItem
+import menumanager
 from recipemanager.models import Recipe
 from django.template import RequestContext
 import datetime
@@ -51,6 +52,10 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             menu_type=menu_type)
     recent_recipes = Recipe.objects.order_by('-last_made')[:5]
     popular_recipes = Recipe.objects.order_by('made_count')[:5]
+    info_data = {
+            'date': dt,
+            'type': menumanager.models.type_mapping[int(menu_type)]
+            }
 
     return render_to_response(
             'menu_items.html',
@@ -58,6 +63,7 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
                 'current_recipes': current_recipes,
                 'recent_recipes': recent_recipes,
                 'popular_recipes': popular_recipes,
+                'info_data': info_data,
             },
             context_instance=RequestContext(request)
             )

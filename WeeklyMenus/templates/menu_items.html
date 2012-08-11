@@ -15,7 +15,7 @@
 
 <div class="row">
     <div class="span12">
-        <h2>Current Menu Items</h2>
+        <h2>Menu Items for {{info_data.type}}, {{info_data.date|date:"m/d/y"}}</h2>
         {% if current_recipes|length > 0 %}
         <table><tbody>
             {% for menuitem in current_recipes %}
