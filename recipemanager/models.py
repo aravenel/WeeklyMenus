@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
+from ajax_select import make_ajax_field
 
 # Create your models here.
 class Recipe(models.Model):
@@ -46,3 +47,25 @@ class RecipeForm(ModelForm):
         #Set field labels
         self.fields['url'].label = "Recipe URL"
         self.fields['title'].label = "Recipe Title"
+
+class RecipeAjaxForm(ModelForm):
+    class Meta:
+        model = Recipe
+        fields = ()
+
+    title = make_ajax_field(Recipe, 'title', 'recipe', help_text=None)
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-RecipeAjaxForm'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_method = 'post'
+        self.helper.form_action = '.'
+        self.helper.layout = Layout(
+                Field('title', css_class='input-xxlarge'),
+                FormActions(
+                    Submit('submit', 'Add Recipe to Menu', css_class='btn btn-primary btn-large')
+                    )
+                )
+
+        super(RecipeAjaxForm, self).__init__(*args, **kwargs)

@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from menumanager.models import WeeklyMenu, WeeklyMenuForm, MenuItem
 import menumanager
-from recipemanager.models import Recipe
+from recipemanager.models import Recipe, RecipeAjaxForm
 from django.template import RequestContext
 import datetime
 
@@ -56,6 +56,7 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             'date': dt,
             'type': menumanager.models.type_mapping[int(menu_type)]
             }
+    recipe_search_form = RecipeAjaxForm()
 
     return render_to_response(
             'menu_items.html',
@@ -64,6 +65,7 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
                 'recent_recipes': recent_recipes,
                 'popular_recipes': popular_recipes,
                 'info_data': info_data,
+                'recipe_search_form': recipe_search_form,
             },
             context_instance=RequestContext(request)
             )

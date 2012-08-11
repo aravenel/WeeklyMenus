@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from ajax_select import urls as ajax_select_urls
 
 urlpatterns = patterns('',
     # Examples:
@@ -8,5 +9,6 @@ urlpatterns = patterns('',
     #url(r'^menus/', include('menus.urls')),
     url(r'^$', 'recipemanager.views.index'),
     url(r'^add$', 'recipemanager.views.add'),
+    url(r'^lookups/', include(ajax_select_urls)),
     #url(r'^(?P<recipe_id>\d)/$', 'recipemanager.views.edit')
 )

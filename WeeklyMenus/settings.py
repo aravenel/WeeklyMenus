@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     #'bootstrap_toolkit',
     'crispy_forms',
+    'ajax_select',
     'south',
     'debug_toolbar',
     'menumanager',
@@ -182,3 +183,9 @@ DEBUG_TOOLBAR_CONFIG  = {
         }
 #Make crispy forms fail loudly for debugging
 CRISPY_FAIL_SILENTLY = not DEBUG
+#Ajax-selects options
+AJAX_LOOKUP_CHANNELS = {
+        'recipe': {'model': 'recipemanager.Recipe', 'search_field':'title'},
+        }
+AJAX_SELECT_BOOTSTRAP = True
+AJAX_SELECT_INLINES = 'inline'
