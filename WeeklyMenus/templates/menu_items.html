@@ -31,9 +31,11 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" style="padding-top:10px;">
     <div class="span12">
-        {{recipe_search_form}}
+        {% load crispy_forms_tags %}
+
+        {% crispy recipe_search_form %}
     </div>
 </div>
 

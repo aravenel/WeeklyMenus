@@ -51,7 +51,7 @@ class RecipeForm(ModelForm):
 class RecipeAjaxForm(ModelForm):
     class Meta:
         model = Recipe
-        fields = ()
+        fields = ('title',)
 
     title = make_ajax_field(Recipe, 'title', 'recipe', help_text=None)
 

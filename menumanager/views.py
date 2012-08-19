@@ -47,6 +47,18 @@ def index(request):
             )
 
 def menu_edit(request, weeklymenu_id, menu_date, menu_type):
+    if request.method == 'POST':
+        recipe_search_form = RecipeAjaxForm(request.POST)
+        if recipe_search_form.is_valid():
+            menu = get_object_or_404(WeeklyMenu, pk=weeklymenu_id)
+            recipe = get_object_or_404(Recipe, title=recipe_search_form.cleaned_data['title'])
+            dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
+            mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe)
+            mi.save()
+            return redirect(request.path)
+    else:
+        recipe_search_form = RecipeAjaxForm()
+
     dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
     current_recipes = MenuItem.objects.filter(menu=weeklymenu_id, menu_date=dt,
             menu_type=menu_type)
@@ -56,7 +68,6 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             'date': dt,
             'type': menumanager.models.type_mapping[int(menu_type)]
             }
-    recipe_search_form = RecipeAjaxForm()
 
     return render_to_response(
             'menu_items.html',
