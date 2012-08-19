@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms import ModelForm
+from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field
@@ -21,6 +22,7 @@ class WeeklyMenu(models.Model):
     #Weekly menu container--holds menus for each day of week
     start_date = models.DateField()
     end_date = models.DateField()
+    owner = models.ForeignKey(User)
 
     def __unicode__(self):
         return "Weekly Menu %s to %s" % (self.start_date, self.end_date)
@@ -76,6 +78,7 @@ class MenuItem(models.Model):
     menu = models.ForeignKey('WeeklyMenu')
     menu_date = models.DateField()
     menu_type = models.IntegerField()
+    owner = models.ForeignKey(User)
     recipe = models.ForeignKey('recipemanager.Recipe')
 
     def __unicode__(self):

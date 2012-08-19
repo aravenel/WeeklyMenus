@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from menumanager.models import WeeklyMenu, WeeklyMenuForm, MenuItem
+from django.contrib.auth.decorators import login_required
 import menumanager
 from recipemanager.models import Recipe, RecipeAjaxForm
 from django.template import RequestContext
@@ -11,16 +12,19 @@ def daterange(start_date, end_date):
         yield start_date + datetime.timedelta(n)
 
 # Create your views here.
+@login_required
 def index(request):
     if request.method == 'POST':
         weekly_menu_form = WeeklyMenuForm(request.POST)
         if weekly_menu_form.is_valid():
-            weekly_menu_form.save()
+            weekly_menu = weekly_menu_form.save(commit=False)
+            weekly_menu.owner = request.user
+            weekly_menu.save()
             return redirect('/menus')
     else:
         weekly_menu_form = WeeklyMenuForm()
     
-    all_menus = WeeklyMenu.objects.all()
+    all_menus = WeeklyMenu.objects.filter(owner=request.user)
     today = datetime.date.today()
     current_menu = None
     menu_dict = None
@@ -46,14 +50,17 @@ def index(request):
             context_instance=RequestContext(request)
             )
 
+@login_required
 def menu_edit(request, weeklymenu_id, menu_date, menu_type):
     if request.method == 'POST':
         recipe_search_form = RecipeAjaxForm(request.POST)
         if recipe_search_form.is_valid():
-            menu = get_object_or_404(WeeklyMenu, pk=weeklymenu_id)
-            recipe = get_object_or_404(Recipe, title=recipe_search_form.cleaned_data['title'])
+            menu = get_object_or_404(WeeklyMenu, pk=weeklymenu_id, owner=request.user)
+            recipe = get_object_or_404(Recipe, title=recipe_search_form.cleaned_data['title'],
+                    owner=request.user)
             dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
-            mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe)
+            mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe,
+                    owner=request.user)
             mi.save()
             return redirect(request.path)
     else:
@@ -61,9 +68,9 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
 
     dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
     current_recipes = MenuItem.objects.filter(menu=weeklymenu_id, menu_date=dt,
-            menu_type=menu_type)
-    recent_recipes = Recipe.objects.order_by('-last_made')[:5]
-    popular_recipes = Recipe.objects.order_by('made_count')[:5]
+            menu_type=menu_type, owner=request.user)
+    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-last_made')[:5]
+    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('made_count')[:5]
     info_data = {
             'date': dt,
             'type': menumanager.models.type_mapping[int(menu_type)]
@@ -81,23 +88,27 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             context_instance=RequestContext(request)
             )
 
+@login_required
 def recipe_add(request, weeklymenu_id, menu_date, menu_type, recipe_id):
-    menu = get_object_or_404(WeeklyMenu, pk=weeklymenu_id)
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    menu = get_object_or_404(WeeklyMenu, pk=weeklymenu_id, owner=request.user)
+    recipe = get_object_or_404(Recipe, pk=recipe_id, owner=request.user)
     dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
-    mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe)
+    mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe,
+            owner=request.user)
     mi.save()
     next = request.GET.get('next')
     return redirect(next)
 
+@login_required
 def item_delete(request, item_id):
-    item = get_object_or_404(MenuItem, pk=item_id)
+    item = get_object_or_404(MenuItem, pk=item_id, owner=request.user)
     item.delete()
     next = request.GET.get('next')
     return redirect(next)
 
+@login_required
 def weekly_menu_view(request, menu_id):
-    menu = get_object_or_404(WeeklyMenu, pk=menu_id)
+    menu = get_object_or_404(WeeklyMenu, pk=menu_id, owner=request.user)
     menu_dict = menu.build_menu_dict()
     return render_to_response(
             'weekly_menu_view.html',

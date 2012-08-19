@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms import ModelForm
+from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
@@ -13,6 +14,7 @@ class Recipe(models.Model):
     last_made = models.DateTimeField(null=True,blank=True)
     made_count = models.IntegerField(null=True,blank=True,default=0)
     comments = models.TextField(null=True,blank=True)
+    owner = models.ForeignKey(User)
 
     def __unicode__(self):
         return self.title

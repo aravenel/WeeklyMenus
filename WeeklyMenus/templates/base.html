@@ -31,6 +31,13 @@
               <li><a href="/menus/">Menus</a></li>
               <li><a href="/recipes/">Recipes</a></li>
             </ul>
+            <ul class="nav pull-right">
+              {% if user.is_authenticated %}
+              <li><a href="/">Logged in as {{ user.username }}</a></li>
+              {% else %}
+              <li>No user logged in</li>
+              {% endif %}
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
