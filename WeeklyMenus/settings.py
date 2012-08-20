@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     #'bootstrap_toolkit',
     'crispy_forms',
     'ajax_select',
+    'taggit',
     'south',
     'debug_toolbar',
     'menumanager',

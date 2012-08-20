@@ -5,6 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
 from ajax_select import make_ajax_field
+from taggit.managers import TaggableManager
 
 # Create your models here.
 class Recipe(models.Model):
@@ -15,6 +16,7 @@ class Recipe(models.Model):
     made_count = models.IntegerField(null=True,blank=True,default=0)
     comments = models.TextField(null=True,blank=True)
     owner = models.ForeignKey(User)
+    tags = TaggableManager()
 
     def __unicode__(self):
         return self.title

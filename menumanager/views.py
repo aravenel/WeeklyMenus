@@ -69,8 +69,8 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
     dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
     current_recipes = MenuItem.objects.filter(menu=weeklymenu_id, menu_date=dt,
             menu_type=menu_type, owner=request.user)
-    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-last_made')[:5]
-    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('made_count')[:5]
+    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-added')[:5]
+    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('-made_count')[:5]
     info_data = {
             'date': dt,
             'type': menumanager.models.type_mapping[int(menu_type)]
@@ -96,12 +96,17 @@ def recipe_add(request, weeklymenu_id, menu_date, menu_type, recipe_id):
     mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe,
             owner=request.user)
     mi.save()
+    recipe.made_count += 1
+    recipe.save()
     next = request.GET.get('next')
     return redirect(next)
 
 @login_required
 def item_delete(request, item_id):
     item = get_object_or_404(MenuItem, pk=item_id, owner=request.user)
+    recipe = item.recipe
+    recipe.made_count -= 1
+    recipe.save()
     item.delete()
     next = request.GET.get('next')
     return redirect(next)

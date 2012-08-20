@@ -17,8 +17,8 @@ def index(request):
     else:
         add_form = RecipeForm()
 
-    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-last_made')[:5]
-    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('made_count')[:5]
+    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-added')[:5]
+    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('-made_count')[:5]
 
     return render_to_response(
             'recipes.html',
@@ -55,8 +55,8 @@ def edit(request, recipe_id):
     else:
         recipe_form = RecipeForm(instance=recipe)
 
-    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-last_made')[:5]
-    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('made_count')[:5]
+    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-added')[:5]
+    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('-made_count')[:5]
 
     return render_to_response(
             'edit_recipe.html',
