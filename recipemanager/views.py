@@ -1,5 +1,5 @@
 from recipemanager.models import Recipe, RecipeForm
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 # Create your views here.
@@ -41,3 +41,23 @@ def add(request):
     else:
         pass
     return redirect('/recipes')
+
+@login_required
+def edit(request, recipe_id):
+    if request.method == 'POST':
+        recipe_form = RecipeForm(request.POST)
+        if recipe_form.is_valid():
+            pass
+    else:
+        recipe = get_object_or_404(Recipe, pk=recipe_id,
+                owner=request.user)
+        recipe_form = RecipeForm(instance=recipe)
+
+    return render_to_response(
+            'edit_recipe.html',
+            {
+                'recipe_form': recipe_form,
+            },
+            context_instance = RequestContext(request)
+            )
+
