@@ -55,6 +55,7 @@ class WeeklyMenuForm(ModelForm):
     #Form to add a new weekly menu
     class Meta:
         model = WeeklyMenu
+        fields = ('start_date', 'end_date')
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

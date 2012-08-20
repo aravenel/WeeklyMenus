@@ -26,15 +26,15 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Times Made</th>
-                    <th>Link</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
             {% for recipe in popular_recipes %}
                 <tr>
-                    <td>{{recipe.title}}</td>
+                    <td><a href="{{recipe.url}}">{{recipe.title}}</a></td>
                     <td>{{recipe.made_count}}</td>
-                    <td><a href="{{recipe.url}}">Link</a></td>
+                    <td><a href="/recipes/{{recipe.id}}">Edit</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -47,15 +47,15 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Added</th>
-                    <th>Link</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
             {% for recipe in recent_recipes %}
                 <tr>
-                    <td>{{recipe.title}}</td>
-                    <td>{{recipe.added}}</td>
-                    <td><a href="{{recipe.url}}">Link</a></td>
+                    <td><a href="{{recipe.url}}">{{recipe.title}}</a></td>
+                    <td>{{recipe.added|date:"m/d/y"}}</td>
+                    <td><a href="/recipes/{{recipe.id}}">Edit</a></td>
                 </tr>
             {% endfor %}
             </tbody>

@@ -1,11 +1,7 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<style type="text/css">
-    td {
-        min-width: 75px;
-    }
-</style>
+
 
 
 {% endblock %}
@@ -15,31 +11,14 @@
 
 <div class="row">
     <div class="span12">
-        <h2>Menu Items for {{info_data.type}}, {{info_data.date|date:"m/d/y"}}</h2>
-        {% if current_recipes|length > 0 %}
-        <table><tbody>
-            {% for menuitem in current_recipes %}
-            <tr>
-                <td>{{ menuitem.recipe.title }}</td>
-                <td style="padding-left:10px;"><a class="btn btn-mini btn-danger" href="/menus/delete/{{menuitem.id}}?next={{request.path}}">Delete</a></td>
-            </td>
-            {% endfor %}
-        </tbody></table>
-        {% else %}
-            <p>No recipes added to menu!</p>
-        {% endif %}
-    </div>
-</div>
-
-<div class="row" style="padding-top:10px;">
-    <div class="span12">
+        <h2>Edit Recipe: {{recipe.title}}</h2>
         {% load crispy_forms_tags %}
 
-        {% crispy recipe_search_form %}
+        {% crispy recipe_form %}
     </div>
 </div>
 
-<div class="row" style="padding-top:20px;">
+<div class="row">
     <div class="span6">
         <h2>Most Frequently Made</h2>
         <table class="table table-striped">
@@ -47,14 +26,15 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Times Made</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
             {% for recipe in popular_recipes %}
                 <tr>
-                    <td>{{recipe.title}}</td>
+                    <td><a href="{{recipe.url}}">{{recipe.title}}</a></td>
                     <td>{{recipe.made_count}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>
+                    <td><a href="/recipes/{{recipe.id}}">Edit</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -67,14 +47,15 @@
                 <tr>
                     <th>Recipe</th>
                     <th>Added</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
             {% for recipe in recent_recipes %}
                 <tr>
-                    <td>{{recipe.title}}</td>
+                    <td><a href="{{recipe.url}}">{{recipe.title}}</a></td>
                     <td>{{recipe.added|date:"m/d/y"}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}">Add to Menu</a></td>
+                    <td><a href="/recipes/{{recipe.id}}">Edit</a></td>
                 </tr>
             {% endfor %}
             </tbody>
