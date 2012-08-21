@@ -13,6 +13,7 @@ def index(request):
             recipe = add_form.save(commit=False)
             recipe.owner = request.user
             recipe.save()
+            add_form.save_m2m()
             return redirect('/recipes')
     else:
         add_form = RecipeForm()
@@ -38,6 +39,7 @@ def add(request):
             recipe = form.save(commit = False)
             recipe.owner = request.user
             recipe.save()
+            form.save_m2m()
     else:
         pass
     return redirect('/recipes')
@@ -52,6 +54,7 @@ def edit(request, recipe_id):
             updated_recipe = recipe_form.save(commit=False)
             updated_recipe.owner = request.user
             updated_recipe.save()
+            recipe_form.save_m2m()
     else:
         recipe_form = RecipeForm(instance=recipe)
 

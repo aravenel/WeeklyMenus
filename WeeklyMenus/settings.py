@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'ajax_select',
     'taggit',
+    'taggit_autocomplete',
     'south',
     'debug_toolbar',
     'menumanager',
@@ -179,14 +180,21 @@ LOGGING = {
 }
 
 INTERNAL_IPS = ('127.0.0.1')
+
+#Debug toolbar settings
 DEBUG_TOOLBAR_CONFIG  = {
         'INTERCEPT_REDIRECTS': False,
         }
+
 #Make crispy forms fail loudly for debugging
 CRISPY_FAIL_SILENTLY = not DEBUG
+
 #Ajax-selects options
 AJAX_LOOKUP_CHANNELS = {
         'recipe': {'model': 'recipemanager.Recipe', 'search_field':'title'},
         }
 AJAX_SELECT_BOOTSTRAP = True
 AJAX_SELECT_INLINES = 'inline'
+
+#django-taggit-autocomplete settings
+TAGGIT_AUTOCOMPLETE_JS_BASE_URL = ''

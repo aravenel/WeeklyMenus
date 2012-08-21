@@ -12,7 +12,8 @@ urlpatterns = patterns('',
     url(r'^$', 'menumanager.views.index'),
     url(r'^recipes/', include('recipemanager.urls')),
     url(r'^menus/', include('menumanager.urls')),
-
+    #taggit_autocomplete urls
+    (r'^taggit_autocomplete/', include('taggit_autocomplete.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

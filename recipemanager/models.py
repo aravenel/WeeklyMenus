@@ -5,7 +5,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
 from ajax_select import make_ajax_field
-from taggit.managers import TaggableManager
+#from taggit.managers import TaggableManager
+from taggit_autocomplete.managers import TaggableManager
 
 # Create your models here.
 class Recipe(models.Model):
@@ -25,7 +26,7 @@ class RecipeForm(ModelForm):
 
     class Meta:
         model = Recipe
-        fields = ('url', 'title', 'comments')
+        fields = ('url', 'title', 'comments', 'tags')
 
     #crispy-forms setup stuff
     def __init__(self, *args, **kwargs):
@@ -38,6 +39,7 @@ class RecipeForm(ModelForm):
                 Field('url', css_class='input-xxlarge'),
                 Field('title', css_class='input-xxlarge'),
                 Field('comments', rows='5', css_class='input-xxlarge'),
+                Field('tags', css_class='input-xxlarge'),
                 FormActions(
                     Submit('submit', 'Add Recipe', css_class='btn-primary'),
                     Reset('reset', 'Reset', css_class='btn'),
