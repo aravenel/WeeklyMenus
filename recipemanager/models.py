@@ -6,7 +6,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
 from ajax_select import make_ajax_field
 #from taggit.managers import TaggableManager
-from taggit_autocomplete.managers import TaggableManager
+from taggit_autosuggest.managers import TaggableManager
 
 # Create your models here.
 class Recipe(models.Model):
