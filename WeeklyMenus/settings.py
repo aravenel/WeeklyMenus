@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'menumanager',
     'recipemanager',
+    'djcelery',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -199,3 +200,10 @@ AJAX_SELECT_INLINES = 'inline'
 
 #django-taggit-autocomplete settings
 TAGGIT_AUTOCOMPLETE_JS_BASE_URL = ''
+
+#Celery Settings
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULTS_BACKEND = "redis://localhost:6379/0"
