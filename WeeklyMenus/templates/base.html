@@ -27,15 +27,18 @@
         <div class="container">
           <a class="brand" href="#">Menu Planner</a>
           <div class="nav-collapse">
+            {% if user.is_authenticated %}
             <ul class="nav">
               <li><a href="/menus/">Menus</a></li>
               <li><a href="/recipes/">Recipes</a></li>
             </ul>
+            {% endif %}
             <ul class="nav pull-right">
               {% if user.is_authenticated %}
               <li><a href="/">Logged in as {{ user.username }}</a></li>
+              <li><a href="/accounts/logout">Logout</a></li>
               {% else %}
-              <li>No user logged in</li>
+              <li><a href="/accounts/login">Login</a></li>
               {% endif %}
             </ul>
           </div><!--/.nav-collapse -->

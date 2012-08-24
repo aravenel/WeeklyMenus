@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2>Login</h2>
+
+        {% if form.errors %}
+        <div class="alert alert-error">
+            Invalid login credentials. Please try again!
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url django.contrib.auth.views.login %}"
+            class="form-horizontal">
+            {% csrf_token %}
+            <div class="clearfix control-group">
+                <label for="id_username" class="control-label requiredField">
+                    Username
+                </label>
+                <div class="controls">
+                    <input id="id_username" type="text" class="input-xxlarge textinput textInput"
+                    name="username" maxlength=200>
+                </div>
+            </div>
+            <div class="clearfix control-group">
+                <label for="id_password" class="control-label requiredField">
+                    Password
+                </label>
+                <div class="controls">
+                    <input id="id_password" type="password" class="input-xxlarge textinput textInput"
+                    name="password" maxlength=200>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <input type="Submit" name="Submit" value="Submit" class="btn btn-primary">
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+                {% else %}
+                <input type="hidden" name="next" value="/recipes" />
+                {% endif %}
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
