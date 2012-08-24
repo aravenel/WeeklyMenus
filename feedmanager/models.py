@@ -15,6 +15,7 @@ class RecipeFeed(models.Model):
     feed_type = models.CharField(max_length=200, choices=FEED_CHOICES)
     feed_username = models.CharField(blank=True, null=True, max_length=200)
     feed_apikey = models.CharField(blank=True, null=True, max_length=300)
+    feed_tag_key = models.CharField(blank=True, null=True, max_length=100)
     owner = models.ForeignKey(User)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -26,7 +27,7 @@ class RecipeFeedForm(ModelForm):
 
     class Meta:
         model = RecipeFeed
-        fields = ('feed_type', 'feed_username', 'feed_apikey',)
+        fields = ('feed_type', 'feed_username', 'feed_apikey', 'feed_tag_key')
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -38,6 +39,7 @@ class RecipeFeedForm(ModelForm):
                 Field('feed_type'),
                 Field('feed_username', css_class='input-xxlarge'),
                 Field('feed_apikey', css_class='input-xxlarge'),
+                Field('feed_tag_key', css_class='input-xxlarge'),
                 FormActions(
                     Submit('submit', 'Add Recipe Feed', css_class='btn-primary'),
                     Reset('reset', 'Reset', css_class='btn'),
@@ -49,3 +51,4 @@ class RecipeFeedForm(ModelForm):
         #Set field names
         self.fields['feed_username'].label = 'Feed Username'
         self.fields['feed_apikey'].label = 'Feed API Key'
+        self.fields['feed_tag_key'].label = 'Tag to filter for recipes'
