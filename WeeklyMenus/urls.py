@@ -12,11 +12,14 @@ urlpatterns = patterns('',
     url(r'^$', 'menumanager.views.index'),
     url(r'^recipes/', include('recipemanager.urls')),
     url(r'^menus/', include('menumanager.urls')),
+    url(r'^feeds/', include('feedmanager.urls')),
+
     #taggit_autocomplete urls
-    #(r'^taggit_autocomplete/', include('taggit_autocomplete.urls')),
     (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
     #Login form
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login'),

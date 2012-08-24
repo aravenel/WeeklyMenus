@@ -147,9 +147,10 @@ INSTALLED_APPS = (
     'taggit_autosuggest',
     'south',
     'debug_toolbar',
+    'djcelery',
     'menumanager',
     'recipemanager',
-    'djcelery',
+    'feedmanager',
 )
 
 # A sample logging configuration. The only tangible logging

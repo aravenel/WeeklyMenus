@@ -9,9 +9,10 @@ from crispy_forms.layout import Submit, Layout, Field, Reset
 
 # Create your models here.
 class RecipeFeed(models.Model):
-    feed_type = (
+    FEED_CHOICES = (
             ('pinboard', 'Pinboard'),
             )
+    feed_type = models.CharField(max_length=200, choices=FEED_CHOICES)
     feed_username = models.CharField(blank=True, null=True, max_length=200)
     feed_apikey = models.CharField(blank=True, null=True, max_length=300)
     owner = models.ForeignKey(User)
@@ -19,13 +20,13 @@ class RecipeFeed(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "%s feed for %s" % (self.feed_type, self.owner)
+        return "%s feed for %s" % (self.get_feed_type_display(), self.owner)
 
 class RecipeFeedForm(ModelForm):
 
     class Meta:
         model = RecipeFeed
-        fields = ('feed_type', 'feed_username', 'feed_apikey')
+        fields = ('feed_type', 'feed_username', 'feed_apikey',)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

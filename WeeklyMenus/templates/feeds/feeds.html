@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2 style="padding-bottom:10px;">{{ title }}</h2>
+        {% load crispy_forms_tags %}
+
+        {% crispy feed_form %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <h2>Current Feeds</h2>
+        {% if all_feeds|length > 0 %}
+        <table class="table table-striped">
+            <thead>
+                <th>Feed</th>
+                <th>Feed Last Checked for Updates</th>
+                <th></th>
+                <th></th>
+            </thead>
+            <tbody>
+            {% for feed in all_feeds %}
+            <tr>
+                <td>{{feed.get_feed_type_display}}</td>
+                <td>{{feed.updated}}</td>
+                <td><a href="/feeds/{{feed.id}}/update?next={{request.path}}" class="btn">Check for Updates</a></td>
+                <td><a href="/feeds/{{feed.id}}" class="btn">Edit</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No feeds--why don't you add one so you can import recipes?</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
