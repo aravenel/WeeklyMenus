@@ -12,6 +12,7 @@ def index(request):
         if add_form.is_valid():
             recipe = add_form.save(commit=False)
             recipe.owner = request.user
+            recipe.source = "web"
             recipe.save()
             add_form.save_m2m()
             return redirect('/recipes')
@@ -38,6 +39,7 @@ def add(request):
         if form.is_valid():
             recipe = form.save(commit = False)
             recipe.owner = request.user
+            recipe.source = "web"
             recipe.save()
             form.save_m2m()
     else:

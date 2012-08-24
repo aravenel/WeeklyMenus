@@ -17,6 +17,7 @@ class Recipe(models.Model):
     made_count = models.IntegerField(null=True,blank=True,default=0)
     comments = models.TextField(null=True,blank=True)
     owner = models.ForeignKey(User)
+    source = models.CharField(max_length=100)
     tags = TaggableManager()
 
     def __unicode__(self):
