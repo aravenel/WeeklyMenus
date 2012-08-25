@@ -26,6 +26,7 @@
                 <th>Feed Last Checked for Updates</th>
                 <th></th>
                 <th></th>
+                <th></th>
             </thead>
             <tbody>
             {% for feed in all_feeds %}
@@ -34,6 +35,7 @@
                 <td>{{feed.updated}}</td>
                 <td><a href="/feeds/{{feed.id}}/update?next={{request.path}}" class="btn">Check for Updates</a></td>
                 <td><a href="/feeds/{{feed.id}}" class="btn">Edit</a></td>
+                <td><a href="/feeds/{{feed.id}}/delete" class="btn btn-danger">Delete</a></td>
             </tr>
             {% endfor %}
             </tbody>

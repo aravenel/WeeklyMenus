@@ -208,3 +208,4 @@ djcelery.setup_loader()
 
 BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULTS_BACKEND = "redis://localhost:6379/0"
+CELERY_DISABLE_RATE_LIMITS = True

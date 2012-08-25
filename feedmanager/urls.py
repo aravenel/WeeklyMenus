@@ -8,5 +8,6 @@ urlpatterns = patterns('',
     #url(r'^menus/', include('menus.urls')),
     url(r'^$', 'feedmanager.views.index'),
     url(r'^(?P<feed_id>\d+)/$', 'feedmanager.views.edit'),
-    url(r'^(?P<feed_id>\d+)/delete$', 'feedmanager.views.edit'),
+    url(r'^(?P<feed_id>\d+)/delete$', 'feedmanager.views.delete'),
+    url(r'^(?P<feed_id>\d+)/update$', 'feedmanager.views.update'),
 )

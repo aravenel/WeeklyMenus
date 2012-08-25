@@ -1,4 +1,6 @@
+import datetime
 from feedmanager.models import RecipeFeed, RecipeFeedForm
+import feedmanager.tasks
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -11,7 +13,9 @@ def index(request):
         if feed_form.is_valid():
             feed = feed_form.save(commit=False)
             feed.owner = request.user
+            feed.updated = datetime.datetime.utcnow()
             feed.save()
+            return redirect('/feeds')
     else:
         feed_form = RecipeFeedForm()
 
@@ -37,6 +41,7 @@ def edit(request, feed_id):
         if feed_form.is_valid():
             feed = feed_form.save(commit=False)
             feed.owner = request.user
+            feed.updated = datetime.datetime.utcnow()
             feed.save()
     else:
         feed_form = RecipeFeedForm(instance=feed)
@@ -59,3 +64,11 @@ def delete(request, feed_id):
     feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
     feed.delete()
     return redirect('/feeds')
+
+@login_required
+def update(request, feed_id):
+    """Kick off the celery task to update a recipe feed"""
+    feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
+    feedmanager.tasks.update_feed_pinboard.delay(feed, request)
+    next = request.GET.get('next')
+    return redirect(next)
