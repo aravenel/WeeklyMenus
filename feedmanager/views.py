@@ -69,6 +69,6 @@ def delete(request, feed_id):
 def update(request, feed_id):
     """Kick off the celery task to update a recipe feed"""
     feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
-    feedmanager.tasks.update_feed_pinboard.delay(feed, request)
+    feedmanager.tasks.update_feed_pinboard.delay(feed, request.user)
     next = request.GET.get('next')
     return redirect(next)

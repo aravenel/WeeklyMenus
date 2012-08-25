@@ -17,6 +17,8 @@ class Recipe(models.Model):
     made_count = models.IntegerField(null=True,blank=True,default=0)
     comments = models.TextField(null=True,blank=True)
     owner = models.ForeignKey(User)
+    #Used for hash of recipe title (e.g. from Pinboard)--used for dupe detection
+    hash = models.CharField(max_length=100, blank=True, null=True)
     source = models.CharField(max_length=100)
     tags = TaggableManager()
 
