@@ -32,7 +32,11 @@
             {% for feed in all_feeds %}
             <tr>
                 <td>{{feed.get_feed_type_display}}</td>
-                <td>{{feed.updated}}</td>
+                {% if feed.updated == None %}
+                    <td>Never</td>
+                {% else %}
+                    <td>{{feed.updated}}</td>
+                {% endif %}
                 <td><a href="/feeds/{{feed.id}}/update?next={{request.path}}" class="btn">Check for Updates</a></td>
                 <td><a href="/feeds/{{feed.id}}" class="btn">Edit</a></td>
                 <td><a href="/feeds/{{feed.id}}/delete" class="btn btn-danger">Delete</a></td>

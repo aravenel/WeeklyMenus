@@ -13,7 +13,7 @@ def index(request):
         if feed_form.is_valid():
             feed = feed_form.save(commit=False)
             feed.owner = request.user
-            feed.updated = datetime.datetime.utcnow()
+            #feed.updated = datetime.datetime.utcnow()
             feed.save()
             return redirect('/feeds')
     else:

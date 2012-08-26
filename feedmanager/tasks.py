@@ -12,9 +12,14 @@ def update_feed(feed, request):
 @task
 def update_feed_pinboard(feed, user):
     """Get pinboard feed of recipes and kick of subtasks to process them"""
-    feed_time = feed.updated.strftime('%Y-%m-%dT%H:%M:%SZ')
-    feed_url = 'https://api.pinboard.in/v1/posts/all?auth_token=%s&tag=%s&format=json&fromdt=%s' % (
-            feed.feed_apikey, feed.feed_tag_key, feed_time)
+    if feed.updated is not None:
+        feed_time = feed.updated.strftime('%Y-%m-%dT%H:%M:%SZ')
+        feed_url = 'https://api.pinboard.in/v1/posts/all?auth_token=%s&tag=%s&format=json&fromdt=%s' % (
+                feed.feed_apikey, feed.feed_tag_key, feed_time)
+    else:
+        feed_url = 'https://api.pinboard.in/v1/posts/all?auth_token=%s&tag=%s&format=json' % (
+                feed.feed_apikey, feed.feed_tag_key)
+
 
     #Hit API
     r = requests.get(feed_url)

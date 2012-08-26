@@ -18,7 +18,7 @@ class RecipeFeed(models.Model):
     feed_tag_key = models.CharField(blank=True, null=True, max_length=100)
     owner = models.ForeignKey(User)
     added = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField()
+    updated = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return "%s feed for %s" % (self.get_feed_type_display(), self.owner)
