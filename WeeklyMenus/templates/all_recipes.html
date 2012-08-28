@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2 style="padding-bottom:10px;">All Recipes</h2>
+        <p align="right">
+        Sort By: <a href="?page={{contacts.number}}&sort=title">Title</a> |
+        <a href="?page={{contacts.number}}&sort=made_count">Made Count</a> |
+        <a href="?page={{contacts.number}}&sort=last_made">Last Made</a>
+        </p>
+        <table class='table'>
+            <tbody>
+                {% for recipe in recipes %}
+                <tr>
+                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
+                    <td><a href="{{recipe.url}}">Link</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p align='right'>
+        {% if recipes.has_previous %}
+        <a href="?page={{recipes.previous_page_number}}&sort={{sort}}">Previous</a>
+        {% endif %}
+        Page {{recipes.number}} of {{num_pages}}
+        {% if recipes.has_next %}
+        <a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a>
+        {% endif %}
+        </p>
+    </div>
+</div>
+
+{% endblock %}

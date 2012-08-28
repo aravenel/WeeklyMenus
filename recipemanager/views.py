@@ -2,6 +2,7 @@ from recipemanager.models import Recipe, RecipeForm
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
 @login_required
@@ -78,3 +79,39 @@ def edit(request, recipe_id):
 def delete(request, recipe_id):
     pass
 
+@login_required
+def all(request, tag=None):
+    sort = request.GET.get('sort')
+    page = request.GET.get('page')
+
+    valid_sorts = [
+            'title',
+            'made_count',
+            'last_made',
+            ]
+
+    if sort not in valid_sorts:
+        sort = 'title'
+
+    if tag is None:
+        all_recipes = Recipe.objects.filter(owner=request.user).order_by(sort)
+    else:
+        all_recipes = Recipe.objects.filter(owner=request.user, tags__name_in=[tag]).order_by(sort)
+
+    paginator = Paginator(all_recipes, 10)
+    try:
+        recipes = paginator.page(page)
+    except PageNotAnInteger:
+        recipes = paginator.page(1)
+    except EmptyPage:
+        recipes = paginator.page(paginator.num_pages)
+
+    return render_to_response(
+            'all_recipes.html',
+            {
+                'recipes': recipes,
+                'num_pages': paginator.num_pages,
+                'sort': sort,
+            },
+            context_instance = RequestContext(request)
+            )
