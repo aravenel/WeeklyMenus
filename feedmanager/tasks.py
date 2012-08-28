@@ -40,7 +40,7 @@ def update_feed_pinboard(feed, user):
             #Call group of subtasks
             job = group(
                     [add_recipe.s(recipe['href'], recipe['description'],
-                        user, 'pinboard', recipe['hash'], recipe['tags'])
+                        user, 'pinboard', recipe['hash'], recipe['tags'].split(" "))
                     for recipe in recipes]
                     )
 
