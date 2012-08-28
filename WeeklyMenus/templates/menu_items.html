@@ -74,7 +74,7 @@
                 <tr>
                     <td>{{recipe.title}}</td>
                     <td>{{recipe.added|date:"m/d/y"}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}">Add to Menu</a></td>
+                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>
                 </tr>
             {% endfor %}
             </tbody>

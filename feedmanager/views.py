@@ -39,10 +39,10 @@ def edit(request, feed_id):
     if request.method == 'POST':
         feed_form = RecipeFeedForm(request.POST, instance=feed)
         if feed_form.is_valid():
-            feed = feed_form.save(commit=False)
-            feed.owner = request.user
-            feed.updated = datetime.datetime.utcnow()
-            feed.save()
+            updated_feed = feed_form.save(commit=False)
+            updated_feed.owner = request.user
+            updated_feed.updated = None
+            updated_feed.save()
     else:
         feed_form = RecipeFeedForm(instance=feed)
 

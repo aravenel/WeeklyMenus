@@ -5,7 +5,9 @@
 <script type="text/JavaScript">
     $(document).ready(function(){
         $('.datepicker').datepicker({
-                format: 'mm/dd/yyyy'
+            format: 'mm/dd/yyyy'
+            }).on('changeDate', function(ev){
+                $(this).datepicker('hide');
                 });
             })
 </script>
