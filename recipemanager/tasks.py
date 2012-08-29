@@ -19,6 +19,5 @@ def add_recipe(url, title, owner, source, hash, tags):
                 hash = hash
                 )
         recipe.save()
-        tags = (str(tag) for tag in tags)
-        recipe.tags.add(tags)
+        recipe.tags.add(*tags)
     return True
