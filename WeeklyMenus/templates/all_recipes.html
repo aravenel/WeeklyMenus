@@ -9,8 +9,16 @@
 {% block main_content %}
 
 <div class="row">
+</div>
+
+<div class="row">
     <div class="span12">
         <h2 style="padding-bottom:10px;">All Recipes</h2>
+        <div class="span12">
+            <h3>Search</h3>
+            {% load crispy_forms_tags %}
+            {% crispy recipe_search_form %}
+        </div>
         <p align="right">
         Sort By: <a href="?page={{contacts.number}}&sort=title">Title</a> |
         <a href="?page={{contacts.number}}&sort=made_count">Made Count</a> |

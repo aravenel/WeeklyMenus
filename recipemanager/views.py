@@ -1,4 +1,4 @@
-from recipemanager.models import Recipe, RecipeForm
+from recipemanager.models import Recipe, RecipeForm, RecipeAjaxSearchForm
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -81,6 +81,7 @@ def delete(request, recipe_id):
 
 @login_required
 def all(request, tag=None):
+    recipe_search_form = RecipeAjaxSearchForm()
     sort = request.GET.get('sort')
     page = request.GET.get('page')
 
@@ -112,6 +113,7 @@ def all(request, tag=None):
                 'recipes': recipes,
                 'num_pages': paginator.num_pages,
                 'sort': sort,
+                'recipe_search_form': recipe_search_form,
             },
             context_instance = RequestContext(request)
             )

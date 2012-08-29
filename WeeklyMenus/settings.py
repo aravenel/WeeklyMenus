@@ -147,10 +147,8 @@ INSTALLED_APPS = (
     'taggit_autosuggest',
     'south',
     'debug_toolbar',
-    'djcelery',
     'menumanager',
     'recipemanager',
-    'feedmanager',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -195,17 +193,11 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 #Ajax-selects options
 AJAX_LOOKUP_CHANNELS = {
         'recipe': {'model': 'recipemanager.Recipe', 'search_field':'title'},
+        'recipe_search': ('recipemanager.lookups', "RecipeSearch"),
         }
 AJAX_SELECT_BOOTSTRAP = True
 AJAX_SELECT_INLINES = 'inline'
 
 #django-taggit-autocomplete settings
-TAGGIT_AUTOCOMPLETE_JS_BASE_URL = ''
-
-#Celery Settings
-import djcelery
-djcelery.setup_loader()
-
-BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULTS_BACKEND = "redis://localhost:6379/0"
-CELERY_DISABLE_RATE_LIMITS = True
+#TAGGIT_AUTOCOMPLETE_JS_BASE_URL = ''
+#TAGGIT_AUTOSUGGEST_STATIC_BASE_URL = os.path.join()
