@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+</div>
+
+<div class="row">
+    <div class="span12">
+        <h2 style="padding-bottom:10px;">All Recipes</h2>
+        <div class="span12">
+            {% load crispy_forms_tags %}
+            {% crispy recipe_search_form %}
+        </div>
+    </div>
+    <div class="span12">
+        <h2 style="padding-bottom:10px;">Results for "{{term}}":</h2>
+        <h3 style="padding-bottom:10px">Recipes</h3>
+        {% if title_matches|length > 0 %}
+        <table class='table'>
+            {% for recipe in title_matches %}
+                <tr>
+                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
+                    <td><a href="{{recipe.url}}">Link</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No matches.</p>
+        {% endif %}
+        <h3 style="padding-top: 15px;">Tags</h3>
+        {% for tag in tag_matches %}
+            {{ tag }}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

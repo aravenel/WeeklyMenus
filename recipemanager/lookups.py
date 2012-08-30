@@ -15,3 +15,6 @@ class RecipeSearch(LookupChannel):
 
     def get_result(self, obj):
         return obj.title
+
+    def format_match(self, obj):
+        return u"<a href='/recipes/%s'>%s<a>" % (obj.id, obj.title)

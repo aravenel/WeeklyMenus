@@ -1,4 +1,5 @@
-from recipemanager.models import Recipe, RecipeForm, RecipeAjaxSearchForm
+from recipemanager.models import Recipe, RecipeForm, RecipeSearchForm
+from taggit.models import Tag
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -81,7 +82,8 @@ def delete(request, recipe_id):
 
 @login_required
 def all(request, tag=None):
-    recipe_search_form = RecipeAjaxSearchForm()
+    #recipe_search_form = RecipeAjaxSearchForm()
+    recipe_search_form = RecipeSearchForm()
     sort = request.GET.get('sort')
     page = request.GET.get('page')
 
@@ -117,3 +119,30 @@ def all(request, tag=None):
             },
             context_instance = RequestContext(request)
             )
+
+@login_required
+def search(request):
+    if request.method == 'POST':
+        recipe_search_form = RecipeSearchForm(request.POST)
+        if recipe_search_form.is_valid():
+            term = recipe_search_form.cleaned_data['term']
+            title_matches = Recipe.objects.filter(owner=request.user, title__contains=term)
+            tag_matches = Tag.objects.filter(name=term, recipe__owner=request.user)
+            #Get unique tag names--that's all we need
+            tag_matches = list(set([tag.name for tag in tag_matches]))
+        else:
+            term = None
+            title_matches = None
+            tag_matches = None
+        return render_to_response(
+                'recipe_search.html',
+                {
+                    'term': term,
+                    'title_matches': title_matches,
+                    'tag_matches': tag_matches,
+                    'recipe_search_form': recipe_search_form,
+                },
+                context_instance = RequestContext(request)
+                )
+    else:
+        return redirect('/recipes/all')

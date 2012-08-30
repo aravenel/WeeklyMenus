@@ -1,5 +1,5 @@
 from django.db import models
-from django.forms import ModelForm
+from django.forms import ModelForm, Form, CharField
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
@@ -93,13 +93,31 @@ class RecipeAjaxSearchForm(ModelForm):
         self.helper.form_id = 'id-RecipeAjaxForm'
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
-        self.helper.form_action = '.'
+        self.helper.form_action = '/recipes/all/search'
         self.helper.layout = Layout(
                 Field('title', css_class='input-xxlarge'),
                 FormActions(
-                    Submit('submit', 'Submit', css_class='btn btn-primary btn-large')
+                    Submit('submit', 'Search', css_class='btn btn-primary btn-large')
                     )
                 )
 
         super(RecipeAjaxSearchForm, self).__init__(*args, **kwargs)
 
+class RecipeSearchForm(Form):
+
+    term = CharField(max_length=200)
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'RecipeSearch'
+        self.helper.form_class = "form-search"
+        self.helper.form_method = "post"
+        self.helper.form_action = "/recipes/search/"
+        self.helper.layout = Layout(
+                Field('term', css_class='input-xxlarge'),
+                FormActions(
+                    Submit('submit', 'Search', css_class='btn')
+                    )
+                )
+
+        super(RecipeSearchForm, self).__init__(*args, **kwargs)
