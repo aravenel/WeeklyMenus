@@ -21,6 +21,7 @@
     </div>
     <div class="span12">
         <h2 style="padding-bottom:10px;">Results for "{{term}}":</h2>
+
         <h3>Recipes</h3>
         {% if title_matches|length > 0 %}
         <table class='table'>
@@ -34,10 +35,11 @@
         {% else %}
             <p>No matching recipes.</p>
         {% endif %}
+
         <h3 style="padding-top: 15px;">Tags</h3>
         {% if tag_matches|length > 0 %}
-            {% for tag in tag_matches %}
-                {{ tag }}
+            {% for tag_match in tag_matches %}
+            <a href="/recipes/tags/{{tag_match}}">{{tag_match}}</a>
             {% endfor %}
         {% else %}
             <p>No matching tags.</p>

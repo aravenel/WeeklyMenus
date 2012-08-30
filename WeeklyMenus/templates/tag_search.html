@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+</div>
+
+<div class="row">
+    <div class="span12">
+        <h2 style="padding-bottom:10px;">Recipes with tag {{tag}}:</h2>
+        {% if recipes|length > 0 %}
+        <table class='table'>
+            {% for recipe in recipes %}
+                <tr>
+                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
+                    <td><a href="{{recipe.url}}">Link</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p>No matching recipes.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

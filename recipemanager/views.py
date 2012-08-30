@@ -146,3 +146,15 @@ def search(request):
                 )
     else:
         return redirect('/recipes/all')
+
+@login_required
+def tag_search(request, tag):
+    recipes = Recipe.objects.filter(owner=request.user, tags__name=tag)
+    return render_to_response(
+            'tag_search.html',
+            {
+                'recipes': recipes,
+                'tag': tag,
+            },
+            context_instance = RequestContext(request)
+            )
