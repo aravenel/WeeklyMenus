@@ -194,6 +194,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 AJAX_LOOKUP_CHANNELS = {
         'recipe': {'model': 'recipemanager.Recipe', 'search_field':'title'},
         'recipe_search': ('recipemanager.lookups', "RecipeSearch"),
+        'recipe_add': ('recipemanager.lookups', "RecipeAddToMenu"),
         }
 AJAX_SELECT_BOOTSTRAP = True
 AJAX_SELECT_INLINES = 'inline'

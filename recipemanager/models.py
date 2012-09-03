@@ -63,7 +63,8 @@ class RecipeAjaxForm(ModelForm):
         model = Recipe
         fields = ('title',)
 
-    title = make_ajax_field(Recipe, 'title', 'recipe', help_text=None)
+    #title = make_ajax_field(Recipe, 'title', 'recipe', help_text=None)
+    title = AutoCompleteSelectField('recipe_add')
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
