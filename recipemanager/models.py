@@ -1,10 +1,11 @@
 from django.db import models
 from django.forms import ModelForm, Form, CharField
+from django.forms.widgets import RadioSelect
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
-from ajax_select import make_ajax_field
+#from ajax_select import make_ajax_field
 from ajax_select.fields import AutoCompleteSelectField
 #from taggit.managers import TaggableManager
 from taggit_autosuggest.managers import TaggableManager
@@ -22,6 +23,14 @@ class Recipe(models.Model):
     hash = models.CharField(max_length=100, blank=True, null=True)
     source = models.CharField(max_length=100)
     tags = TaggableManager()
+    RATING_CHOICES = (
+            (1, '1 - Not Good'),
+            (2, '2 - OK'),
+            (3, '3 - Good'),
+            (4, '4 - Very Good'),
+            (5, '5 - Excellent - Going in the weekly rotation!'),
+            )
+    rating = models.IntegerField(choices=RATING_CHOICES, blank=True, null=True)
 
     def __unicode__(self):
         return self.title
@@ -30,7 +39,7 @@ class RecipeForm(ModelForm):
 
     class Meta:
         model = Recipe
-        fields = ('url', 'title', 'comments', 'tags')
+        fields = ('url', 'title', 'comments', 'tags', 'rating')
 
     #crispy-forms setup stuff
     def __init__(self, *args, **kwargs):
@@ -44,6 +53,7 @@ class RecipeForm(ModelForm):
                 Field('title', css_class='input-xxlarge'),
                 Field('comments', rows='5', css_class='input-xxlarge'),
                 Field('tags', css_class='input-xxlarge'),
+                Field('rating', widget='RadioSelect'),
                 FormActions(
                     Submit('submit', 'Add Recipe', css_class='btn-primary'),
                     Reset('reset', 'Reset', css_class='btn'),
