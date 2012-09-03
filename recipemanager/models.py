@@ -39,7 +39,7 @@ class RecipeForm(ModelForm):
 
     class Meta:
         model = Recipe
-        fields = ('url', 'title', 'comments', 'tags', 'rating')
+        fields = ('url', 'title', 'comments', 'made_count', 'tags', 'rating')
 
     #crispy-forms setup stuff
     def __init__(self, *args, **kwargs):
@@ -52,6 +52,7 @@ class RecipeForm(ModelForm):
                 Field('url', css_class='input-xxlarge'),
                 Field('title', css_class='input-xxlarge'),
                 Field('comments', rows='5', css_class='input-xxlarge'),
+                Field('made_count', readonly='readonly', css_class="input-mini"),
                 Field('tags', css_class='input-xxlarge'),
                 Field('rating', widget='RadioSelect'),
                 FormActions(
@@ -67,6 +68,7 @@ class RecipeForm(ModelForm):
         #Set field labels
         self.fields['url'].label = "Recipe URL"
         self.fields['title'].label = "Recipe Title"
+        self.fields['made_count'].label = "Times Made"
 
 class RecipeAjaxForm(ModelForm):
     class Meta:
