@@ -87,22 +87,13 @@ def all(request, tag=None):
     sort = request.GET.get('sort')
     page = request.GET.get('page')
 
-    #List of valid keys to sort by
-    #valid_sorts = [
-            #'title',
-            #'made_count',
-            #'last_made',
-            #'rating',
-            #]
-
     #Dict of valid sorts and their sort order (asc, desc)
     valid_sorts = {
             'title': 'asc',
             'made_count': 'desc',
             'last_made': 'desc',
-            'rating': 'desc'
+            'rating': 'desc',
             }
-
 
     #If invalid sort key specified, sort by title
     if sort not in valid_sorts.keys():
@@ -114,11 +105,13 @@ def all(request, tag=None):
     else:
         sort_string = sort
 
+    #Get the recipe objects
     if tag is None:
         all_recipes = Recipe.objects.filter(owner=request.user).order_by(sort_string)
     else:
         all_recipes = Recipe.objects.filter(owner=request.user, tags__name_in=[tag]).order_by(sort_string)
 
+    #Build the paginator
     paginator = Paginator(all_recipes, 10)
     try:
         recipes = paginator.page(page)
