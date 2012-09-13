@@ -35,3 +35,6 @@ venv/*
 celerybeat.pid
 celerybeat-schedule
 celeryev.pid
+
+#Password files (DB)
+passwords*

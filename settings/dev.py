@@ -34,3 +34,8 @@ INSTALLED_APPS = (
     'menumanager',
     'recipemanager',
 )
+
+#Debug toolbar settings
+DEBUG_TOOLBAR_CONFIG  = {
+        'INTERCEPT_REDIRECTS': False,
+        }
