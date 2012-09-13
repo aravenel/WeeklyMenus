@@ -67,3 +67,4 @@ def deploy():
         #Restart gunicorn server
 
         #Restart nginx server
+        sudo('service nginx restart')
