@@ -8,8 +8,18 @@ CONFIG = {
             'repo': 'dev',
             },
         'staging': {
+            #Name of the branch to use
             'repo': 'staging',
+            #Location where the code is stored
             'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
+            #Location of python executable--for virtualenv
+            'python': os.path.join(CONFIG['staging']['code_dir'], 
+                'venv/bin/python'),
+            #gunicorn server name (in supervisord)
+            'gunicorn_name': 'menus-staging',
+            #celeryd server name (in supervisord)
+            'celeryd_name': 'menus-staging-celeryd',
+            #Hosts to use
             'hosts': [
                 'http://menus-dev.alexravenel.com',
                 ],
@@ -23,6 +33,9 @@ def staging():
     env.code_dir = CONFIG['staging']['code_dir']
     env.repo = CONFIG['staging']['repo']
     env.environment = 'staging'
+    env.python = CONFIG['staging']['python']
+    env.gunicorn_name = CONFIG['staging']['gunicorn_name']
+    env.celeryd_name = CONFIG['staging']['celeryd_name']
 
 def prod():
     print "\n\nWARNING! You are about to deploy to production!\n\n"
@@ -33,6 +46,9 @@ def prod():
         env.code_dir = CONFIG['prod']['code_dir']
         env.repo = CONFIG['prod']['repo']
         env.environment = 'prod'
+        env.python = CONFIG['prod']['python']
+        env.gunicorn_name = CONFIG['prod']['gunicorn_name']
+        env.celeryd_name = CONFIG['prod']['celeryd_name']
     else:
         exit()
 
@@ -53,18 +69,23 @@ def deploy():
 
         #Sync DB
         #sudo('python manage.py syncdb --settings=settings.%s' % env.environment)
-        run('python manage.py syncdb --settings=settings.%s' % env.environment)
+        run('%s manage.py syncdb --settings=settings.%s' % (env.python, env.environment))
 
         #Run South migrations
         #sudo('python manage.py migrate --all --settings=settings.%s' % env.environment)
-        run('python manage.py migrate --all --settings=settings.%s' % env.environment)
+        run('%s manage.py migrate --all --settings=settings.%s' % (env.python, env.environment))
+
+        #Collect static
+        run('%s manage.py collectstatic --settings=settings.%s' % (env.python, env.environment))
 
         #Restart redis
-        sudo('service redis-server restart')
+        #sudo('service redis-server restart')
 
         #Restart celery workers
+        sudo('supervisorctl restart %s' % env.celeryd_name)
 
         #Restart gunicorn server
+        sudo('supervisorctl restart %s' % env.gunicorn_name)
 
         #Restart nginx server
         sudo('service nginx restart')
