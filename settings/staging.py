@@ -35,4 +35,4 @@ INSTALLED_APPS = (
     'recipemanager',
 )
 
-DEBUG = False
+DEBUG = True
