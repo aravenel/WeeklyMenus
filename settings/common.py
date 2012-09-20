@@ -1,5 +1,8 @@
 # Django settings for WeeklyMenus project.
 import os
+import djcelery
+
+djcelery.setup_loader()
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
 

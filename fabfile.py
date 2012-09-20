@@ -18,7 +18,7 @@ CONFIG = {
             #gunicorn server name (in supervisord)
             'gunicorn_name': 'menus-staging',
             #celeryd server name (in supervisord)
-            'celeryd_name': 'menus-staging-celeryd',
+            'celeryd_name': 'celery-menus-staging',
             #Hosts to use
             'hosts': [
                 #'http://menus-dev.alexravenel.com',
@@ -30,7 +30,7 @@ CONFIG = {
         }
 
 key_locations = {
-        'usnycaravenel1': r'C:\Users\aravenel\pub.ppk',
+        'usnycaravenel1': r'C:\Users\aravenel\pri-openssh.ppk',
         }
 
 
@@ -43,7 +43,7 @@ def staging():
     env.gunicorn_name = CONFIG['staging']['gunicorn_name']
     env.celeryd_name = CONFIG['staging']['celeryd_name']
     env.user = 'ravenel'
-    env.key_filename = [key_locations[gethostname()]]
+    env.key_filename = key_locations[gethostname()]
 
 def prod():
     print "\n\nWARNING! You are about to deploy to production!\n\n"
@@ -66,6 +66,7 @@ def deploy():
         #sudo('git pull')
         #sudo('git checkout %s' % env.repo)
         print "Checking out code...",
+        run('git reset --hard HEAD')
         run('git pull')
         run('git checkout %s' % env.repo)
 
@@ -91,7 +92,7 @@ def deploy():
 
         #Collect static
         print "Collecting static files..."
-        run('%s manage.py collectstatic --settings=settings.%s' % (env.python, env.environment))
+        run('%s manage.py collectstatic --noinput --settings=settings.%s' % (env.python, env.environment))
         print "Done."
 
         #Restart redis

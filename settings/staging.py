@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'south',
     'menumanager',
     'recipemanager',
+    'djcelery',
     #'debug_toolbar',
 )
 
@@ -50,3 +51,5 @@ MIDDLEWARE_CLASSES = (
 DEBUG = True
 
 STATIC_ROOT = '/home/ravenel/apps/menus-staging/static_files'
+
+BROKER_URL = 'redis://localhost:6379/0'
