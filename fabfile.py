@@ -99,9 +99,9 @@ def deploy():
         #sudo('service redis-server restart')
 
         #Restart celery workers
-        #print "Restarting celery workers...."
-        #sudo('supervisorctl restart %s' % env.celeryd_name)
-        #print "Done."
+        print "Restarting celery workers...."
+        sudo('supervisorctl restart %s' % env.celeryd_name)
+        print "Done."
 
         #Restart gunicorn server
         print "Restarting gunicorn server..."
