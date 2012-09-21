@@ -37,6 +37,7 @@ def staging():
     env.code_dir = CONFIG['staging']['code_dir']
     env.repo = CONFIG['staging']['repo']
     env.environment = 'staging'
+    env.merges_from = 'develop'
     env.python = CONFIG['staging']['python']
     env.supervisord_group = CONFIG['staging']['supervisord_group']
     env.user = 'ravenel'
@@ -55,6 +56,13 @@ def prod():
         env.supervisord_group = CONFIG['prod']['supervisord_group']
     else:
         exit()
+
+def merge():
+    local('git checkout %s' % env.environment)
+    local('git merge %s' % env.merges_from)
+
+def push():
+    local('git push origin %s' % env.environment)
 
 def deploy():
     with cd(env.code_dir):
