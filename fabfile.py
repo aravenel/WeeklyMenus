@@ -15,10 +15,8 @@ CONFIG = {
             'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
             #Location of python executable--for virtualenv
             'python': '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
-            #gunicorn server name (in supervisord)
-            'gunicorn_name': 'menus-staging',
-            #celeryd server name (in supervisord)
-            'celeryd_name': 'celery-menus-staging',
+            #Group containing programs in supervisord.conf
+            'supervisord_group': 'menus-staging',
             #Hosts to use
             'hosts': [
                 #'http://menus-dev.alexravenel.com',
@@ -40,8 +38,7 @@ def staging():
     env.repo = CONFIG['staging']['repo']
     env.environment = 'staging'
     env.python = CONFIG['staging']['python']
-    env.gunicorn_name = CONFIG['staging']['gunicorn_name']
-    env.celeryd_name = CONFIG['staging']['celeryd_name']
+    env.supervisord_group = CONFIG['staging']['supervisord_group']
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
 
@@ -55,8 +52,7 @@ def prod():
         env.repo = CONFIG['prod']['repo']
         env.environment = 'prod'
         env.python = CONFIG['prod']['python']
-        env.gunicorn_name = CONFIG['prod']['gunicorn_name']
-        env.celeryd_name = CONFIG['prod']['celeryd_name']
+        env.supervisord_group = CONFIG['prod']['supervisord_group']
     else:
         exit()
 
@@ -98,14 +94,9 @@ def deploy():
         #Restart redis
         #sudo('service redis-server restart')
 
-        #Restart celery workers
-        print "Restarting celery workers...."
-        sudo('supervisorctl restart %s' % env.celeryd_name)
-        print "Done."
-
-        #Restart gunicorn server
-        print "Restarting gunicorn server..."
-        sudo('supervisorctl restart %s' % env.gunicorn_name)
+        #Restart supervisord groups
+        print "Restarting supervisord programs..."
+        sudo('supervisorctl restart %s:' % env.supervisord_group)
         print "Done."
 
         #Restart nginx server
