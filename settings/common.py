@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'menumanager',
     'recipemanager',
+    'feedmanager',
 )
 
 # A sample logging configuration. The only tangible logging

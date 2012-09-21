@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'menumanager',
     'recipemanager',
+    'feedmanager',
 )
 
 #Debug toolbar settings

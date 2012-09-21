@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'south',
     'menumanager',
     'recipemanager',
+    'feedmanager',
     'djcelery',
     #'debug_toolbar',
 )
