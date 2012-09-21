@@ -12,7 +12,10 @@ def clean_url_parameters(url):
         param_string = url_parts[1]
         params = param_string.split("&")
         cleaned_params = [param for param in params if not param.starts_with("utm_")]
-        cleaned_url = "%s?%s" % (root, "&".join(cleaned_params))
+        if len(cleaned_params) > 0:
+            cleaned_url = "%s?%s" % (root, "&".join(cleaned_params))
+        else:
+            cleaned_url = root
     else:
         cleaned_url = url
 
