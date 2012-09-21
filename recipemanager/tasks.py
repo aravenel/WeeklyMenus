@@ -5,9 +5,11 @@ def clean_url_parameters(url):
     """Clean up URL parameter cruft. Inspired by pinboard.
     Will remove all url parameters that start with urm_*"""
 
-    root, param_string = url.split("?")
+    url_parts = url.split("?")
+    root = url_parts[0]
 
-    if len(param_string) > 0:
+    if len(url_parts) > 0:
+        param_string = url_parts[1]
         params = param_string.split("&")
         cleaned_params = [param for param in params if not param.starts_with("utm_")]
         cleaned_url = "%s?%s" % (root, "&".join(cleaned_params))
