@@ -61,11 +61,11 @@ def prod():
         exit()
 
 def merge():
-    local('git checkout %s' % env.environment)
+    local('git checkout %s' % env.repo)
     local('git merge %s' % env.merges_from)
 
 def push():
-    local('git push origin %s' % env.environment)
+    local('git push origin %s' % env.repo)
 
 def deploy():
     with cd(env.code_dir):

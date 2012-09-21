@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+{{ recipe_form.media }}
+
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="row">
+    <div class="span12">
+        <h2>{{recipe.title}}</h2>
+        {{ recipe }}
+        <a class="btn btn-primary" href="/recipes/{{recipe.id}}/edit">Edit Recipe</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span6">
+        <h2>Most Frequently Made</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Count</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in popular_recipes %}
+                <tr>
+                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
+                    <td>{{recipe.made_count}}</td>
+                    <td><a href="{{recipe.url}}">View</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="span6">
+        <h2>Most Recent</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Added</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for recipe in recent_recipes %}
+                <tr>
+                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
+                    <td>{{recipe.added|date:"m/d/y"}}</td>
+                    <td><a href="{{recipe.url}}">View</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <p align="center">
+            <a class="btn btn-primary" href="/recipes/all">View All Recipes</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

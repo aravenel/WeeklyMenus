@@ -49,6 +49,18 @@ def add(request):
     return redirect('/recipes')
 
 @login_required
+def view(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id,
+            owner=request.user)
+    return render_to_response(
+            'view_recipe.html',
+            {
+                'recipe': recipe,
+            },
+            context_instance = RequestContext(request),
+            )
+
+@login_required
 def edit(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id,
             owner=request.user)
