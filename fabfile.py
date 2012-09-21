@@ -54,6 +54,8 @@ def prod():
         env.environment = 'prod'
         env.python = CONFIG['prod']['python']
         env.supervisord_group = CONFIG['prod']['supervisord_group']
+        env.user = 'ravenel'
+        env.key_filename = key_locations[gethostname()]
     else:
         exit()
 
