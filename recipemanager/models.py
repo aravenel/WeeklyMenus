@@ -12,7 +12,7 @@ from taggit_autosuggest.managers import TaggableManager
 
 # Create your models here.
 class Recipe(models.Model):
-    url = models.URLField()
+    url = models.URLField(max_length=400)
     title = models.CharField(max_length=400)
     added = models.DateTimeField(auto_now_add=True)
     last_made = models.DateTimeField(null=True,blank=True)
