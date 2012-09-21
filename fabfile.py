@@ -29,6 +29,7 @@ CONFIG = {
 
 key_locations = {
         'usnycaravenel1': r'C:\Users\aravenel\pri-openssh.ppk',
+        'glaurung': r'/home/ravenel/.ssh/id_rsa',
         }
 
 
