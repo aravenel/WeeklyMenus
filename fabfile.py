@@ -100,6 +100,6 @@ def deploy():
         print "Done."
 
         #Restart nginx server
-        print "Restarting nginx..."
-        sudo('service nginx restart')
-        print "Done."
+        #print "Restarting nginx..."
+        #sudo('service nginx restart')
+        #print "Done."

@@ -8,7 +8,7 @@ def clean_url_parameters(url):
     url_parts = url.split("?")
     root = url_parts[0]
 
-    if len(url_parts) > 0:
+    if len(url_parts) > 1:
         param_string = url_parts[1]
         params = param_string.split("&")
         cleaned_params = [param for param in params if not param.starts_with("utm_")]
