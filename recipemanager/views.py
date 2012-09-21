@@ -137,7 +137,7 @@ def search(request):
         recipe_search_form = RecipeSearchForm(request.POST)
         if recipe_search_form.is_valid():
             term = recipe_search_form.cleaned_data['term']
-            title_matches = Recipe.objects.filter(owner=request.user, title__contains=term)
+            title_matches = Recipe.objects.filter(owner=request.user, title__icontains=term)
             tag_matches = Tag.objects.filter(name=term, recipe__owner=request.user)
             #Get unique tag names--that's all we need
             tag_matches = list(set([tag.name for tag in tag_matches]))
