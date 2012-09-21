@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'taggit_autosuggest',
     'south',
     'debug_toolbar',
+    'djcelery',
     'menumanager',
     'recipemanager',
     'feedmanager',
@@ -40,3 +41,5 @@ INSTALLED_APPS = (
 DEBUG_TOOLBAR_CONFIG  = {
         'INTERCEPT_REDIRECTS': False,
         }
+
+BROKER_URL = 'redis://localhost:6379/0'
