@@ -52,10 +52,15 @@ def add(request):
 def view(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id,
             owner=request.user)
+    recent_recipes = Recipe.objects.filter(owner=request.user).order_by('-added')[:5]
+    popular_recipes = Recipe.objects.filter(owner=request.user).order_by('-made_count')[:5]
+
     return render_to_response(
             'view_recipe.html',
             {
                 'recipe': recipe,
+                'recent_recipes': recent_recipes,
+                'popular_recipes': popular_recipes,
             },
             context_instance = RequestContext(request),
             )
