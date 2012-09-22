@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'recipemanager',
     'feedmanager',
     'djcelery',
+    'taggit_templatetags',
     #'debug_toolbar',
 )
 
