@@ -20,7 +20,14 @@ Sort By: <a href="?page={{recipes.number}}&sort=title">Title</a> |
 {% if recipes.has_previous %}
 <a href="?page={{recipes.previous_page_number}}&sort={{sort}}">Previous</a>
 {% endif %}
-Page {{recipes.number}} of {{num_pages}}
+{% for page in recipes.paginator.page_range %}
+  {% if page == recipes.number %}
+  <font size=3><strong><a href="?page={{recipes.next_page_number}}&sort={{sort}}">{{page}}</a></strong></font>
+  {% else %}
+  <a href="?page={{recipes.next_page_number}}&sort={{sort}}">{{page}}</a>
+  {% endif %}
+{% endfor %}
+
 {% if recipes.has_next %}
 <a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a>
 {% endif %}

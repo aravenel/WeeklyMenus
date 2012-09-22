@@ -144,7 +144,6 @@ def all(request, tag=None):
             'all_recipes.html',
             {
                 'recipes': recipes,
-                'num_pages': paginator.num_pages,
                 'sort': sort,
                 'recipe_search_form': recipe_search_form,
                 'title': title,
