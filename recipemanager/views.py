@@ -76,6 +76,7 @@ def edit(request, recipe_id):
             updated_recipe.owner = request.user
             updated_recipe.save()
             recipe_form.save_m2m()
+            return redirect('/recipes/%s' % recipe_id)
     else:
         recipe_form = RecipeForm(instance=recipe)
 
