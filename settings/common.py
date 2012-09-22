@@ -190,3 +190,5 @@ AJAX_SELECT_INLINES = 'inline'
 #django-taggit-autocomplete settings
 #TAGGIT_AUTOCOMPLETE_JS_BASE_URL = ''
 #TAGGIT_AUTOSUGGEST_STATIC_BASE_URL = os.path.join()
+
+TAGGIT_TAGCLOUD_MIN = 2

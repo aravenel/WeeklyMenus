@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'menumanager',
     'recipemanager',
     'feedmanager',
+    'taggit_templatetags',
 )
 
 #Debug toolbar settings
