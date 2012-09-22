@@ -6,6 +6,14 @@ from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
+#Dict of valid sorts and their sort order (asc, desc)
+valid_sorts = {
+        'title': 'asc',
+        'made_count': 'desc',
+        'last_made': 'desc',
+        'rating': 'desc',
+        }
+
 @login_required
 def index(request):
 
@@ -105,14 +113,6 @@ def all(request, tag=None):
     sort = request.GET.get('sort')
     page = request.GET.get('page')
 
-    #Dict of valid sorts and their sort order (asc, desc)
-    valid_sorts = {
-            'title': 'asc',
-            'made_count': 'desc',
-            'last_made': 'desc',
-            'rating': 'desc',
-            }
-
     #If invalid sort key specified, sort by title
     if sort not in valid_sorts.keys():
         sort = 'title'
@@ -126,11 +126,13 @@ def all(request, tag=None):
     #Get the recipe objects
     if tag is None:
         all_recipes = Recipe.objects.filter(owner=request.user).order_by(sort_string)
+        title = "All Recipes"
     else:
-        all_recipes = Recipe.objects.filter(owner=request.user, tags__name_in=[tag]).order_by(sort_string)
+        all_recipes = Recipe.objects.filter(owner=request.user, tags__name=tag).order_by(sort_string)
+        title = 'Recipes with tag "%s"' % tag
 
     #Build the paginator
-    paginator = Paginator(all_recipes, 10)
+    paginator = Paginator(all_recipes, 20)
     try:
         recipes = paginator.page(page)
     except PageNotAnInteger:
@@ -145,6 +147,7 @@ def all(request, tag=None):
                 'num_pages': paginator.num_pages,
                 'sort': sort,
                 'recipe_search_form': recipe_search_form,
+                'title': title,
             },
             context_instance = RequestContext(request)
             )
@@ -175,15 +178,3 @@ def search(request):
                 )
     else:
         return redirect('/recipes/all')
-
-@login_required
-def tag_search(request, tag):
-    recipes = Recipe.objects.filter(owner=request.user, tags__name=tag)
-    return render_to_response(
-            'tag_search.html',
-            {
-                'recipes': recipes,
-                'tag': tag,
-            },
-            context_instance = RequestContext(request)
-            )
