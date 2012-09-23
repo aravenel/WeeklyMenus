@@ -19,3 +19,5 @@ requests==0.13.9
 wsgiref==0.1.2
 mysql-python>=1.2.3
 django-taggit-templatetags>=0.4.6
+readability-lxml
+BeautifulSoup

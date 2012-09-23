@@ -1,5 +1,8 @@
 from models import Recipe
 from celery.task import task
+import urllib
+from readability.readability import Document
+from BeautifulSoup import BeautifulSoup
 
 def clean_url_parameters(url):
     """Clean up URL parameter cruft. Inspired by pinboard.
@@ -31,12 +34,37 @@ def add_recipe(url, title, owner, source, hash, tags):
     except Recipe.DoesNotExist:
         print "NEW RECIPE FOUND"
         url = clean_url_parameters(url)
+
+        #Get recipe contents (scrape!)
+        try:
+            html = urllib.urlopen(url).read()
+
+            #HTML to be saved as content of recipe, as parsed by Readability
+            readable_article = Document(html).summary(html_partial=True)
+
+            #Get the first image to be used as thumbnail
+            soup = BeautifulSoup(readable_article)
+            images = soup('img')
+            recipe_img = images[0]['src']
+
+            #Remove all images from readable
+            [image.extract() for image in images]
+            readable_article = soup
+
+        #I know, not good... but so many possible lxml errors
+        except:
+            readable_article = None
+            recipe_img = None
+
+        #Save recipe
         recipe = Recipe(
                 url = url,
                 title = title,
                 owner = owner,
                 source = source,
-                hash = hash
+                hash = hash,
+                content = readable_article,
+                image = recipe_img,
                 )
         recipe.save()
         recipe.tags.add(*tags)

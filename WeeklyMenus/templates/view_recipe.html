@@ -28,6 +28,14 @@
             <div class="span2"><b>Added:</b></div>
             <div class="span6">{{recipe.added}}</div>
         </div>
+        <div class="row">
+            <div class="span2"><b>Image:</b></div>
+            <div class="span6">{{recipe.image|safe}}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><b>Content:</b></div>
+            <div class="span6">{{recipe.content|safe}}</div>
+        </div>
         <div align="center" style="padding-top:10px">
             <a class="btn" href="{{recipe.url}}">View Recipe on Original Site</a>
             <a class="btn btn-primary" href="/recipes/{{recipe.id}}/edit">Edit Recipe</a>

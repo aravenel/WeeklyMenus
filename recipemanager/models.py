@@ -31,6 +31,8 @@ class Recipe(models.Model):
             (5, '5 - Excellent - Going in the weekly rotation!'),
             )
     rating = models.IntegerField(choices=RATING_CHOICES, blank=True, null=True)
+    content = models.TextField(null=True,blank=True)
+    image = models.URLField(max_length=400, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -39,7 +41,8 @@ class RecipeForm(ModelForm):
 
     class Meta:
         model = Recipe
-        fields = ('url', 'title', 'comments', 'made_count', 'tags', 'rating')
+        fields = ('url', 'title', 'comments', 'made_count', 'tags', 'rating',
+                'content', 'image')
 
     #crispy-forms setup stuff
     def __init__(self, *args, **kwargs):
@@ -55,6 +58,8 @@ class RecipeForm(ModelForm):
                 Field('made_count', readonly='readonly', css_class="input-mini"),
                 Field('tags', css_class='input-xxlarge'),
                 Field('rating', widget='RadioSelect'),
+                Field('image', css_class='input-xxlarge'),
+                Field('content', css_class='field span8', rows=20),
                 FormActions(
                     Submit('submit', 'Add Recipe', css_class='btn-primary'),
                     Reset('reset', 'Reset', css_class='btn'),
