@@ -112,6 +112,19 @@ def all(request, tag=None):
     recipe_search_form = RecipeSearchForm()
     sort = request.GET.get('sort')
     page = request.GET.get('page')
+    perpage = request.GET.get('perpage')
+
+    if perpage is not None:
+        try:
+            perpage = int(perpage)
+            if perpage not in [20, 40, 100]:
+                perpage = 20
+        except ValueError:
+            perpage = 20
+
+        request.session['perpage'] = perpage
+
+    user_perpage = request.session.get('perpage', 20)
 
     #If invalid sort key specified, sort by title
     if sort not in valid_sorts.keys():
@@ -132,7 +145,7 @@ def all(request, tag=None):
         title = 'Recipes with tag "%s"' % tag
 
     #Build the paginator
-    paginator = Paginator(all_recipes, 20)
+    paginator = Paginator(all_recipes, user_perpage)
     try:
         recipes = paginator.page(page)
     except PageNotAnInteger:
@@ -145,6 +158,7 @@ def all(request, tag=None):
             {
                 'recipes': recipes,
                 'sort': sort,
+                'perpage': perpage,
                 'recipe_search_form': recipe_search_form,
                 'title': title,
             },
