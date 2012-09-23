@@ -171,10 +171,47 @@ def search(request):
         recipe_search_form = RecipeSearchForm(request.POST)
         if recipe_search_form.is_valid():
             term = recipe_search_form.cleaned_data['term']
-            title_matches = Recipe.objects.filter(owner=request.user, title__icontains=term)
-            tag_matches = Tag.objects.filter(name=term, recipe__owner=request.user)
+            sort = request.GET.get('sort')
+            page = request.GET.get('page')
+            perpage = request.GET.get('perpage')
+
+            if perpage is not None:
+                try:
+                    perpage = int(perpage)
+                    if perpage not in [20, 40, 100]:
+                        perpage = 20
+                except ValueError:
+                    perpage = 20
+
+                request.session['perpage'] = perpage
+
+            user_perpage = request.session.get('perpage', 20)
+
+            #If invalid sort key specified, sort by title
+            if sort not in valid_sorts.keys():
+                sort = 'title'
+
+            #Form the sort string to make sure we sort correctly in asc/desc order
+            if valid_sorts[sort] == 'desc':
+                sort_string = '-%s' % sort
+            else:
+                sort_string = sort
+
             #Get unique tag names--that's all we need
+            tag_matches = Tag.objects.filter(name__icontains=term, recipe__owner=request.user)
             tag_matches = list(set([tag.name for tag in tag_matches]))
+
+            #Get title matches and create paginator items
+            title_matches = Recipe.objects.filter(owner=request.user, title__icontains=term).order_by(sort_string)
+            paginator = Paginator(title_matches, user_perpage)
+
+            try:
+                recipes = paginator.page(page)
+            except PageNotAnInteger:
+                recipes = paginator.page(1)
+            except EmptyPage:
+                recipes = paginator.page(paginator.num_pages)
+
         else:
             term = None
             title_matches = None
@@ -184,6 +221,7 @@ def search(request):
                 {
                     'term': term,
                     'title_matches': title_matches,
+                    'recipes': recipes,
                     'tag_matches': tag_matches,
                     'recipe_search_form': recipe_search_form,
                 },

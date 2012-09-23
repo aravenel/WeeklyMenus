@@ -9,9 +9,6 @@
 {% block main_content %}
 
 <div class="row">
-</div>
-
-<div class="row">
     <div class="span12">
         <h2 style="padding-bottom:10px;">All Recipes</h2>
         <div class="span12">
@@ -19,23 +16,26 @@
             {% crispy recipe_search_form %}
         </div>
     </div>
+</div>
+
+<div class="row">
     <div class="span12">
         <h2 style="padding-bottom:10px;">Results for "{{term}}":</h2>
-
         <h3>Recipes</h3>
-        {% if title_matches|length > 0 %}
-        <table class='table'>
-            {% for recipe in title_matches %}
-                <tr>
-                    <td><a href="/recipes/{{recipe.id}}">{{recipe.title}}</a></td>
-                    <td><a href="{{recipe.url}}">Link</a></td>
-                </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            <p>No matching recipes.</p>
-        {% endif %}
+        <div class="row">
+            <div class="span12">
+                {% if title_matches|length > 0 %}
+                    {% include "multiple_recipes.html" %}
+                {% else %}
+                    <p>No matching recipes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="row">
+    <div class="span12">
         <h3 style="padding-top: 15px;">Tags</h3>
         {% if tag_matches|length > 0 %}
             {% for tag_match in tag_matches %}
