@@ -17,7 +17,6 @@ python-dateutil==1.5
 redis==2.6.2
 requests==0.13.9
 wsgiref==0.1.2
-mysql-python>=1.2.3
-django-taggit-templatetags>=0.4.6
+django-taggit-templatetags
 readability-lxml
 BeautifulSoup

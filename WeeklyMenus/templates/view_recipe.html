@@ -29,12 +29,38 @@
             <div class="span6">{{recipe.added}}</div>
         </div>
         <div class="row">
-            <div class="span2"><b>Image:</b></div>
-            <div class="span6">{{recipe.image|safe}}</div>
+            <div class="span2"><strong>Image:</strong></div>
+            <div class="span6">
+                <div class="accordion" id="image-accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#image-accordion" href="#image-collapse">View Recipe Image</a>
+                        </div>
+                        <div id="image-collapse" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                <img src="{{recipe.image|safe}}"></img>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="span2"><b>Content:</b></div>
-            <div class="span6">{{recipe.content|safe}}</div>
+            <div class="span6">
+                <div class="accordion" id="content-accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#content-accordion" href="#content-collapse">View Recipe Content</a>
+                        </div>
+                        <div id="content-collapse" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                {{recipe.content|safe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div align="center" style="padding-top:10px">
             <a class="btn" href="{{recipe.url}}">View Recipe on Original Site</a>
