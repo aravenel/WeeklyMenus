@@ -20,3 +20,5 @@ wsgiref==0.1.2
 django-taggit-templatetags
 readability-lxml
 BeautifulSoup
+mysql-python
+gunicorn

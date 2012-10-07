@@ -24,19 +24,26 @@
 {% endfor %}
 </div>
 
-<p align='right'>
+<div class="pagination pagination-right">
+  <ul>
   {% if recipes.has_previous %}
-  <a href="?page={{recipes.previous_page_number}}&sort={{sort}}">Previous</a>
+  <li><a href="?page={{recipes.previous_page_number}}&sort={{sort}}">Prev</a></li>
+  {% else %}
+  <li class="disabled"><a href="#">Prev</a></li>
   {% endif %}
+
   {% for page in recipes.paginator.page_range %}
     {% if page == recipes.number %}
-    <font size=3><strong><a href="?page={{page}}&sort={{sort}}">{{page}}</a></strong></font>
+    <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
     {% else %}
-    <a href="?page={{page}}&sort={{sort}}">{{page}}</a>
+    <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
     {% endif %}
   {% endfor %}
 
   {% if recipes.has_next %}
-  <a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a>
+  <li><a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a></li>
+  {% else %}
+  <li class="disabled"><a href="#">Next</a></li>
   {% endif %}
-</p>
+  </ul>
+</div>
