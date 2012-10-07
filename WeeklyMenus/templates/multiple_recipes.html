@@ -34,7 +34,7 @@
 
   {% if show_first %}
   <li><a href="?page=1&sort={{sort}}">1</a></li>
-  <li class="disabled">...</li>
+  <li class="disabled"><a href="#">...</a></li>
   {% endif %}
   {% for page in page_numbers %}
     {% if page == recipes.number %}
@@ -44,7 +44,7 @@
     {% endif %}
   {% endfor %}
   {% if show_last %}
-  <li class="disabled">...</li>
+  <li class="disabled"><a href="#">...</a></li>
   <li><a href="?page={{recipes.paginator.num_pages}}">{{recipes.paginator.num_pages}}</a></li>
   {% endif %}
 

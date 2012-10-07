@@ -182,7 +182,7 @@ def all(request, tag=None):
                 'title': title,
                 'page_numbers': page_numbers,
                 'show_first': 1 not in page_numbers,
-                'show_last': recipes.number not in page_numbers,
+                'show_last': paginator.num_pages not in page_numbers,
             },
             context_instance = RequestContext(request)
             )
