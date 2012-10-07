@@ -38,7 +38,11 @@
                         </div>
                         <div id="image-collapse" class="accordion-body collapse">
                             <div class="accordion-inner">
+                                {% if recipe.image %}
                                 <img src="{{recipe.image|safe}}"></img>
+                                {% else %}
+                                <p>No image. Why don't you add one?'</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
