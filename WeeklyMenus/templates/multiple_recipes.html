@@ -32,31 +32,20 @@
   <li class="disabled"><a href="#">Prev</a></li>
   {% endif %}
 
-  {% if recipes.num_pages > 10 %}
+  {% if show_first %}
+  <li><a href="?page=1&sort={{sort}}">1</a></li>
+  <li class="disabled">...</li>
+  {% endif %}
+  {% for page in page_numbers %}
     {% if page == recipes.number %}
-    <li class="active">
+    <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
     {% else %}
-    <li>
+    <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
     {% endif %}
-    <a href="?page=1&sort={{sort}}">1</a></li>
-
-
-
-    {% if page == recipes.number %}
-    <li class="active">
-    {% else %}
-    <li>
-    {% endif %}
-    <a href="?page={{recipes.number}}&sort={{sort}}">{{recipes.number}}</a></li>
-
-  {% else %}
-    {% for page in recipes.paginator.page_range %}
-      {% if page == recipes.number %}
-      <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
-      {% else %}
-      <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
-      {% endif %}
-    {% endfor %}
+  {% endfor %}
+  {% if show_last %}
+  <li class="disabled">...</li>
+  <li><a href="?page={{recipes.paginator.num_pages}}">{{recipes.paginator.num_pages}}</a></li>
   {% endif %}
 
   {% if recipes.has_next %}

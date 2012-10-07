@@ -14,6 +14,22 @@ valid_sorts = {
         'rating': 'desc',
         }
 
+def build_paginator(page, adjacent_pages=3):
+    """Helper function to build paginator with N number of adjacent pages and 
+    ellipses back until the first and last pages. Helpful for large number of 
+    pages.
+    
+    Returns a list with the numbers of pages (1 indexed) that should be displayed.
+    """
+    start_page = max(page.number - adjacent_pages, 1)
+    if start_page <= 3:
+        start_page = 1
+    end_page = page.number + adjacent_pages + 1
+    if end_page >= page.paginator.num_pages - 1:
+        end_page = page.paginator.num_pages + 1
+    page_numbers = [n for n in range(start_page, end_page) if n > 0 and n <= page.paginator.num_pages]
+    return page_numbers
+
 @login_required
 def index(request):
 
@@ -153,6 +169,9 @@ def all(request, tag=None):
     except EmptyPage:
         recipes = paginator.page(paginator.num_pages)
 
+    #Build the list of pages for the template to render
+    page_numbers = build_paginator(recipes)
+
     return render_to_response(
             'all_recipes.html',
             {
@@ -161,6 +180,9 @@ def all(request, tag=None):
                 'perpage': perpage,
                 'recipe_search_form': recipe_search_form,
                 'title': title,
+                'page_numbers': page_numbers,
+                'show_first': 1 not in page_numbers,
+                'show_last': recipes.number not in page_numbers,
             },
             context_instance = RequestContext(request)
             )
