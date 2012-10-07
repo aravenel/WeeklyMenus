@@ -32,13 +32,32 @@
   <li class="disabled"><a href="#">Prev</a></li>
   {% endif %}
 
-  {% for page in recipes.paginator.page_range %}
+  {% if recipes.num_pages > 10 %}
     {% if page == recipes.number %}
-    <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+    <li class="active">
     {% else %}
-    <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+    <li>
     {% endif %}
-  {% endfor %}
+    <a href="?page=1&sort={{sort}}">1</a></li>
+
+
+
+    {% if page == recipes.number %}
+    <li class="active">
+    {% else %}
+    <li>
+    {% endif %}
+    <a href="?page={{recipes.number}}&sort={{sort}}">{{recipes.number}}</a></li>
+
+  {% else %}
+    {% for page in recipes.paginator.page_range %}
+      {% if page == recipes.number %}
+      <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+      {% else %}
+      <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
 
   {% if recipes.has_next %}
   <li><a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a></li>
