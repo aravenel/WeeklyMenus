@@ -234,6 +234,8 @@ def search(request):
             except EmptyPage:
                 recipes = paginator.page(paginator.num_pages)
 
+            page_numbers = build_paginator(recipes)
+
         else:
             term = None
             title_matches = None
@@ -246,6 +248,9 @@ def search(request):
                     'recipes': recipes,
                     'tag_matches': tag_matches,
                     'recipe_search_form': recipe_search_form,
+                    'page_numbers': page_numbers,
+                    'show_first': 1 not in page_numbers,
+                    'show_last': paginator.num_pages not in page_numbers,
                 },
                 context_instance = RequestContext(request)
                 )
