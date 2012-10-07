@@ -74,8 +74,8 @@ def deploy():
         #sudo('git checkout %s' % env.repo)
         print "Checking out code...",
         run('git reset --hard HEAD')
-        run('git pull')
         run('git checkout %s' % env.repo)
+        run('git pull')
 
         #Push passwords file to host
         settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
