@@ -44,6 +44,16 @@ def staging():
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
 
+def vagrant():
+    env.hosts = ['127.0.0.1:8080']
+    env.users = 'vagrant'
+    env.repo = CONFIG['staging']['repo']
+    env.environment = 'staging'
+    env.merges_from = 'develop'
+    env.python = CONFIG['staging']['python']
+    env.supervisord_group = CONFIG['staging']['supervisord_group']
+    env.key_filename = key_locations[gethostname()]
+
 def prod():
     print "\n\nWARNING! You are about to deploy to production!\n\n"
     print "If you wish to continue, enter Yes:"
@@ -67,6 +77,16 @@ def merge():
 def push():
     local('git push origin %s' % env.repo)
 
+def provision():
+    #install basic background
+    sudo('apt-get update')
+    sudo('apt-get -y upgrade')
+    sudo('apt-get -y install python python-pip nginx redis-server')
+    sudo('update-rc.d nginx defaults')
+    #install python packages
+    sudo('pip install supervisor gunicorn')
+    #deploy config files
+
 def deploy():
     with cd(env.code_dir):
         #Checkout new code
@@ -84,6 +104,9 @@ def deploy():
         else:
             print "Settings file %s does not exist. Cannot copy to host." % settings_file
         print "Done."
+
+        #Make sure all packages are up to date
+        sudo('pip install -r requirements.txt')
 
         #Sync DB
         #sudo('python manage.py syncdb --settings=settings.%s' % env.environment)

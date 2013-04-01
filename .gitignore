@@ -38,3 +38,6 @@ celeryev.pid
 
 #Password files (DB)
 passwords*
+
+#Vagrant
+.vagrant/*
