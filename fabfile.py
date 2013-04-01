@@ -108,15 +108,18 @@ def provision():
     sudo('pip install supervisor gunicorn')
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
+    sudo('mkdir-p /srv/www/menus-dev/logs')
     run('mkdir -p ~/apps/menus-staging')
     sudo('ln -s /vagrant /srv/www/menus-dev/http')
     #deploy config files
     #nginx config
     if env.environment == 'vagrant':
         put('config/nginx.conf', '/etc/nginx/nginx.conf', use_sudo=True)
-        put('config/nginx-enabled.conf', '/etx/nginx/sites-available/', use_sudo=True)
+        put('config/nginx-enabled.conf', '/etc/nginx/sites-available/menus-dev', use_sudo=True)
+        sudo('ln /etc/nginc/sites-available/menus-dev /etc/nginx/sites-enabled/menus-dev')
     elif env.environment == 'staging':
         pass
+    sudo('service nginx restart')
 
 def deploy():
     with cd(env.code_dir):
