@@ -4,6 +4,13 @@ import os
 from sys import exit
 from socket import gethostname
 
+try:
+    from settings.passwords_staging import *
+except ImportError:
+    print "Cannot import passwords_staging file."
+    exit()
+
+
 CONFIG = {
         'dev': {
             'repo': 'dev',
@@ -13,6 +20,10 @@ CONFIG = {
             'repo': 'staging',
             #Location where the code is stored
             'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
+            #Virtualenvwrapper directory
+            'venv_dir': '/home/vagrant/.venvs',
+            #Virtualenvwrapper venv name
+            'venv_name': 'menus-dev',
             #Location of python executable--for virtualenv
             'python': '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
             #Group containing programs in supervisord.conf
@@ -25,9 +36,13 @@ CONFIG = {
             },
         'vagrant': {
             #Name of the branch to use
-            'repo': 'staging',
+            'repo': 'develop',
             #Location where the code is stored
-            'code_dir': '~/apps/menus-staging/WeeklyMenus',
+            'code_dir': '/vagrant',
+            #Virtualenvwrapper directory
+            'venv_dir': '/home/vagrant/.venvs',
+            #Virtualenvwrapper venv name
+            'venv_name': 'menus-dev',
             #Location of python executable--for virtualenv
             'python': '~/apps/menus-staging/WeeklyMenus/venv/bin/python',
             #Group containing programs in supervisord.conf
@@ -49,25 +64,30 @@ key_locations = {
 
 
 def staging():
-    env.hosts = CONFIG['staging']['hosts']
-    env.code_dir = CONFIG['staging']['code_dir']
-    env.repo = CONFIG['staging']['repo']
     env.environment = 'staging'
+    env.hosts = CONFIG[env.environment]['hosts']
+    env.code_dir = CONFIG[env.environment]['code_dir']
+    env.repo = CONFIG[env.environment]['repo']
+    env.venv_dir = CONFIG[env.environment]['venv_dir']
+    env.venv_name = CONFIG[env.environment]['venv_name']
     env.merges_from = 'develop'
-    env.python = CONFIG['staging']['python']
-    env.supervisord_group = CONFIG['staging']['supervisord_group']
+    env.python = CONFIG[env.environment]['python']
+    env.supervisord_group = CONFIG[env.environment]['supervisord_group']
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
 
 def vagrant():
-    env.hosts = ['127.0.0.1:2222']
-    env.code_dir = CONFIG['vagrant']['code_dir']
-    env.user = 'vagrant'
-    env.repo = CONFIG['staging']['repo']
     env.environment = 'vagrant'
+    env.hosts = ['127.0.0.1:2222']
+    env.code_dir = CONFIG[env.environment]['code_dir']
+    env.repo = CONFIG[env.environment]['repo']
+    env.venv_dir = CONFIG[env.environment]['venv_dir']
+    env.venv_name = CONFIG[env.environment]['venv_name']
+    env.user = 'vagrant'
+    env.run_user = 'www-data'
     env.merges_from = 'develop'
-    env.python = CONFIG['staging']['python']
-    env.supervisord_group = CONFIG['staging']['supervisord_group']
+    env.python = CONFIG[env.environment]['python']
+    env.supervisord_group = CONFIG[env.environment]['supervisord_group']
     ssh_keyfile = local('vagrant ssh-config | grep IdentityFile', capture=True)
     if os.name == 'nt':
         env.key_filename = ssh_keyfile.split()[1].replace(r'/', '\\').replace('\"', '')
@@ -101,73 +121,83 @@ def push():
 def provision():
     #install basic background
     sudo('apt-get -qq update')
-    sudo('apt-get -y -qq upgrade')
-    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb')
+    # sudo('apt-get -y -qq upgrade')
+    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev')
     sudo('update-rc.d nginx defaults')
     #install python packages
-    sudo('pip install supervisor gunicorn')
+    sudo('pip install supervisor virtualenv virtualenvwrapper')
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
-    sudo('mkdir-p /srv/www/menus-dev/logs')
-    run('mkdir -p ~/apps/menus-staging')
-    sudo('ln -s /vagrant /srv/www/menus-dev/http')
-    #deploy config files
-    #nginx config
+    sudo('mkdir -p /srv/www/menus-dev/logs')
+    # run('mkdir -p ~/apps/menus-staging')
+    #config files
     if env.environment == 'vagrant':
-        put('config/nginx.conf', '/etc/nginx/nginx.conf', use_sudo=True)
-        put('config/nginx-enabled.conf', '/etc/nginx/sites-available/menus-dev', use_sudo=True)
-        sudo('ln /etc/nginc/sites-available/menus-dev /etc/nginx/sites-enabled/menus-dev')
-    elif env.environment == 'staging':
-        pass
-    sudo('service nginx restart')
+        put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
+        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisord.conf', use_sudo=True)
+        sudo('service nginx restart')
+    #setup virtualenv
+    run('mkdir -p %s' % env.venv_dir)
+    run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
+    run('mkvirtualenv %s' % env.venv_name)
+    #setup mysql databases
+    # run('mysqladmin -u %s -p%s create %s' % (DB_USER, DB_PASS, DB_NAME)) 
+    # run('mysql -uroot -prootpw -e "GRANT ALL PERMISSIONS ON dbname.* TO %s@hostname IDENTIFIED BY \'%s\'"') % (DB_USER, DB_PASS)
+    #do ln last in case it fails on vagrant
+    if env.environment == 'vagrant':
+        sudo('ln -s /vagrant /srv/www/menus-dev/http')
 
 def deploy():
     with cd(env.code_dir):
-        #Checkout new code
-        #sudo('git pull')
-        #sudo('git checkout %s' % env.repo)
-        print "Checking out code...",
-        run('git reset --hard HEAD')
-        run('git checkout %s' % env.repo)
-        run('git pull')
+        if env.environment != 'vagrant':
+            #Checkout new code
+            #sudo('git pull')
+            #sudo('git checkout %s' % env.repo)
+            print "Checking out code...",
+            run('git reset --hard HEAD')
+            run('git checkout %s' % env.repo)
+            run('git pull')
 
-        #Push passwords file to host
-        settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
-        if os.path.isfile(settings_file):
-            put(settings_file, 'settings')
-        else:
-            print "Settings file %s does not exist. Cannot copy to host." % settings_file
-        print "Done."
+            #Push passwords file to host
+            settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
+            if os.path.isfile(settings_file):
+                put(settings_file, 'settings')
+            else:
+                print "Settings file %s does not exist. Cannot copy to host." % settings_file
+            print "Done."
 
-        #Make sure all packages are up to date
-        sudo('pip install -r requirements.txt')
+        with prefix('workon %s' % env.venv_name):
+            #Make sure all packages are up to date
+            sudo('pip install -r requirements.txt')
 
-        #Sync DB
-        #sudo('python manage.py syncdb --settings=settings.%s' % env.environment)
-        print "Syncing DB..."
-        run('%s manage.py syncdb --settings=settings.%s' % (env.python, env.environment))
-        print "Done."
+            #Sync DB
+            #sudo('python manage.py syncdb --settings=settings.%s' % env.environment)
+            print "Syncing DB..."
+            # run('%s manage.py syncdb --settings=settings.%s' % (env.python, env.environment))
+            run('python manage.py syncdb --settings=settings.%s' % (env.environment))
+            print "Done."
 
-        #Run South migrations
-        #sudo('python manage.py migrate --all --settings=settings.%s' % env.environment)
-        print "Running South migrations..."
-        run('%s manage.py migrate --all --settings=settings.%s' % (env.python, env.environment))
-        print "Done."
+            #Run South migrations
+            #sudo('python manage.py migrate --all --settings=settings.%s' % env.environment)
+            print "Running South migrations..."
+            # run('%s manage.py migrate --all --settings=settings.%s' % (env.python, env.environment))
+            run('python manage.py migrate --all --settings=settings.%s' % (env.environment))
+            print "Done."
 
-        #Collect static
-        print "Collecting static files..."
-        run('%s manage.py collectstatic --noinput --settings=settings.%s' % (env.python, env.environment))
-        print "Done."
+            #Collect static
+            print "Collecting static files..."
+            # run('%s manage.py collectstatic --noinput --settings=settings.%s' % (env.python, env.environment))
+            run('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
+            print "Done."
 
-        #Restart redis
-        #sudo('service redis-server restart')
+            #Restart redis
+            #sudo('service redis-server restart')
 
-        #Restart supervisord groups
-        print "Restarting supervisord programs..."
-        sudo('supervisorctl restart %s:' % env.supervisord_group)
-        print "Done."
+            #Restart supervisord groups
+            print "Restarting supervisord programs..."
+            sudo('supervisorctl restart %s:' % env.supervisord_group)
+            print "Done."
 
-        #Restart nginx server
-        #print "Restarting nginx..."
-        #sudo('service nginx restart')
-        #print "Done."
+            #Restart nginx server
+            #print "Restarting nginx..."
+            #sudo('service nginx restart')
+            #print "Done."
