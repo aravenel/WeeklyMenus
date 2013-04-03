@@ -127,10 +127,10 @@ def provision():
     #install basic background
     sudo('apt-get -qq update')
     # sudo('apt-get -y -qq upgrade')
-    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev')
+    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev supervisor vim')
     sudo('update-rc.d nginx defaults')
     #install python packages
-    sudo('pip install supervisor virtualenv virtualenvwrapper')
+    sudo('pip install virtualenv virtualenvwrapper')
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
     sudo('mkdir -p /srv/www/menus-dev/logs')
@@ -138,8 +138,9 @@ def provision():
     #config files
     if env.environment == 'vagrant':
         put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
-        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisord.conf', use_sudo=True)
+        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/supervisord.conf', use_sudo=True)
         sudo('service nginx restart')
+        sudo('service supervisor restart')
     #setup virtualenv
     run('mkdir -p %s' % env.venv_dir)
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
