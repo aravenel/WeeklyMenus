@@ -5,6 +5,7 @@ from sys import exit
 from socket import gethostname
 
 try:
+    # from settings.passwords_staging import DB_NAME, DB_USER, DB_PASS
     from settings.passwords_staging import *
 except ImportError:
     print "Cannot import passwords_staging file."
@@ -12,55 +13,55 @@ except ImportError:
 
 
 CONFIG = {
-        'dev': {
-            'repo': 'dev',
-            },
-        'staging': {
-            #Name of the branch to use
-            'repo': 'staging',
-            #Location where the code is stored
-            'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
-            #Virtualenvwrapper directory
-            'venv_dir': '/home/vagrant/.venvs',
-            #Virtualenvwrapper venv name
-            'venv_name': 'menus-dev',
-            #Location of python executable--for virtualenv
-            'python': '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
-            #Group containing programs in supervisord.conf
-            'supervisord_group': 'menus-staging',
-            #Hosts to use
-            'hosts': [
-                #'http://menus-dev.alexravenel.com',
-                'www.alexravenel.com'
-                ],
-            },
-        'vagrant': {
-            #Name of the branch to use
-            'repo': 'develop',
-            #Location where the code is stored
-            'code_dir': '/vagrant',
-            #Virtualenvwrapper directory
-            'venv_dir': '/home/vagrant/.venvs',
-            #Virtualenvwrapper venv name
-            'venv_name': 'menus-dev',
-            #Location of python executable--for virtualenv
-            'python': '~/apps/menus-staging/WeeklyMenus/venv/bin/python',
-            #Group containing programs in supervisord.conf
-            'supervisord_group': 'menus-staging',
-            #Hosts to use
-            'hosts': [
-                #'http://menus-dev.alexravenel.com',
-                'www.alexravenel.com'
-                ],
-            },
-        'prod': {
-            },
-        }
+    'dev': {
+        'repo': 'dev',
+    },
+    'staging': {
+        #Name of the branch to use
+        'repo': 'staging',
+        #Location where the code is stored
+        'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
+        #Virtualenvwrapper directory
+        'venv_dir': '/home/vagrant/.venvs',
+        #Virtualenvwrapper venv name
+        'venv_name': 'menus-dev',
+        #Location of python executable--for virtualenv
+        'python': '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
+        #Group containing programs in supervisord.conf
+        'supervisord_group': 'menus-staging',
+        #Hosts to use
+        'hosts': [
+            #'http://menus-dev.alexravenel.com',
+            'www.alexravenel.com'
+        ],
+    },
+    'vagrant': {
+        #Name of the branch to use
+        'repo': 'develop',
+        #Location where the code is stored
+        'code_dir': '/vagrant',
+        #Virtualenvwrapper directory
+        'venv_dir': '/home/vagrant/.venvs',
+        #Virtualenvwrapper venv name
+        'venv_name': 'menus-dev',
+        #Location of python executable--for virtualenv
+        'python': '~/apps/menus-staging/WeeklyMenus/venv/bin/python',
+        #Group containing programs in supervisord.conf
+        'supervisord_group': 'menus-staging',
+        #Hosts to use
+        'hosts': [
+            #'http://menus-dev.alexravenel.com',
+            'www.alexravenel.com'
+        ],
+    },
+    'prod': {
+    },
+}
 
 key_locations = {
-        'usnycaravenel1': r'C:\Users\aravenel\pri-openssh.ppk',
-        'glaurung': r'/home/ravenel/.ssh/id_rsa',
-        }
+    'usnycaravenel1': r'C:\Users\aravenel\pri-openssh.ppk',
+    'glaurung': r'/home/ravenel/.ssh/id_rsa',
+}
 
 
 def staging():
@@ -75,6 +76,7 @@ def staging():
     env.supervisord_group = CONFIG[env.environment]['supervisord_group']
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
+
 
 def vagrant():
     env.environment = 'vagrant'
@@ -111,12 +113,15 @@ def prod():
     else:
         exit()
 
+
 def merge():
     local('git checkout %s' % env.repo)
     local('git merge %s' % env.merges_from)
 
+
 def push():
     local('git push origin %s' % env.repo)
+
 
 def provision():
     #install basic background
@@ -140,11 +145,16 @@ def provision():
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
     run('mkvirtualenv %s' % env.venv_name)
     #setup mysql databases
-    # run('mysqladmin -u %s -p%s create %s' % (DB_USER, DB_PASS, DB_NAME)) 
-    # run('mysql -uroot -prootpw -e "GRANT ALL PERMISSIONS ON dbname.* TO %s@hostname IDENTIFIED BY \'%s\'"') % (DB_USER, DB_PASS)
+    #may fail because already exists, etc--if so, will continue
+    with settings(warn_only=True):
+        run('mysqladmin -u root create %s' % (DB_NAME))
+        run('mysql -uroot -e "GRANT ALL PRIVILEGES ON %s.* TO \'%s\'@\'localhost\' IDENTIFIED BY \'%s\'"' % (DB_NAME, DB_USER, DB_PASSWORD))
     #do ln last in case it fails on vagrant
-    if env.environment == 'vagrant':
-        sudo('ln -s /vagrant /srv/www/menus-dev/http')
+    #may fail due to virtualbox weirdness, if so, will continue
+    with settings(warn_only=True):
+        if env.environment == 'vagrant':
+            sudo('ln -s /vagrant /srv/www/menus-dev/http')
+
 
 def deploy():
     with cd(env.code_dir):
@@ -186,7 +196,7 @@ def deploy():
             #Collect static
             print "Collecting static files..."
             # run('%s manage.py collectstatic --noinput --settings=settings.%s' % (env.python, env.environment))
-            run('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
+            sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
             print "Done."
 
             #Restart redis

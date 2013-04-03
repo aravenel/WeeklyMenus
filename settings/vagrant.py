@@ -53,6 +53,6 @@ MIDDLEWARE_CLASSES = (
 
 DEBUG = True
 
-STATIC_ROOT = '/home/ravenel/apps/menus-staging/static_files'
+STATIC_ROOT = '/srv/www/menus-dev/static_files'
 
 BROKER_URL = 'redis://localhost:6379/0'
