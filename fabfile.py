@@ -138,9 +138,10 @@ def provision():
     #config files
     if env.environment == 'vagrant':
         put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
-        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/supervisord.conf', use_sudo=True)
-        sudo('service nginx restart')
-        sudo('service supervisor restart')
+        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/supervisord.conf', use_sudo=True)
+        with settings(warn_only=True):
+            sudo('service nginx restart')
+            sudo('service supervisor restart')
     #setup virtualenv
     run('mkdir -p %s' % env.venv_dir)
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
