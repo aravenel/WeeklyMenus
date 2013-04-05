@@ -11,6 +11,14 @@ except ImportError:
     print "Cannot import passwords_staging file."
     exit()
 
+#
+#   TODO
+#
+#   -Remove config dict--put in environment sections
+#   -Separate out install steps into functions
+#   -Make passwords file dependent on environment (dev vs staging vs vagrant)
+#   -Make gunicorn conf dependent on environment
+#
 
 CONFIG = {
     'dev': {
