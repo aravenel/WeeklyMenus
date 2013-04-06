@@ -102,7 +102,7 @@ def vagrant():
     if os.name == 'nt':
         env.key_filename = ssh_keyfile.split()[1].replace(r'/', '\\').replace('\"', '')
     else:
-        env.key_filename = ssh_keyfile.split()[1]
+        env.key_filename = ssh_keyfile.split()[1].replace('\"', '')
 
 
 def prod():
