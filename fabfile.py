@@ -142,6 +142,7 @@ def provision():
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
     sudo('mkdir -p /srv/www/menus-dev/logs')
+    sudo('chown %s /srv/www/menus-dev/logs' % env.run_user)
     # run('mkdir -p ~/apps/menus-staging')
     #config files
     if env.environment == 'vagrant':
