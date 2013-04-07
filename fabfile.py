@@ -158,7 +158,8 @@ def provision():
     #may fail because already exists, etc--if so, will continue
     with settings(warn_only=True):
         run('mysqladmin -u root create %s' % (DB_NAME))
-        run('mysql -uroot -e "GRANT ALL PRIVILEGES ON %s.* TO \'%s\'@\'localhost\' IDENTIFIED BY \'%s\'"' % (DB_NAME, DB_USER, DB_PASSWORD))
+        run('mysql -uroot -e "USE \'%s\'; GRANT ALL PRIVILEGES ON %s.* TO \'%s\'@\'localhost\' IDENTIFIED BY \'%s\';"' 
+                % (DB_NAME, DB_NAME, DB_USER, DB_PASSWORD))
     #do ln last in case it fails on vagrant
     #may fail due to virtualbox weirdness, if so, will continue
     with settings(warn_only=True):
