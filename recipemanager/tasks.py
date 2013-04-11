@@ -1,8 +1,7 @@
 from models import Recipe
 from celery.task import task
-import urllib
-from readability.readability import Document
-from BeautifulSoup import BeautifulSoup
+from django.conf import settings
+import requests
 
 def clean_url_parameters(url):
     """Clean up URL parameter cruft. Inspired by pinboard.
@@ -36,25 +35,32 @@ def add_recipe(url, title, owner, source, hash, tags):
         url = clean_url_parameters(url)
 
         #Get recipe contents (scrape!)
-        try:
-            html = urllib.urlopen(url).read()
+        #HTML to be saved as content of recipe, as parsed by Readability
+        # readable_article = Document(html).summary(html_partial=True)
+        payload = {'url': url, 'token': settings.DIFFBOT_API_KEY}
+        r = requests.get('http://www.diffbot.com/api/article', params=payload)
+        if r.status_code == 200:
+            diffbot = r.json()
+            content = diffbot['text']
+            primary_image_href = None
+            if 'media' in diffbot.keys():
+                images = [media for media in diffbot['media'] if media['type'] == 'image']
 
-            #HTML to be saved as content of recipe, as parsed by Readability
-            readable_article = Document(html).summary(html_partial=True)
+                #Get primary image
+                for image in images:
+                    #See if anything has primary flag set
+                    if 'primary' in image.keys():
+                        if image['primary'] in [True, 'true']:
+                            primary_image_href = image['link']
 
-            #Get the first image to be used as thumbnail
-            soup = BeautifulSoup(readable_article)
-            images = soup('img')
-            recipe_img = images[0]['src']
-
-            #Remove all images from readable
-            [image.extract() for image in images]
-            readable_article = soup
-
-        #I know, not good... but so many possible lxml errors
-        except:
-            readable_article = None
-            recipe_img = None
+                #If primary flag not set, just get first returned image
+                if not primary_image_href:
+                    primary_image_href = images[0]['link']
+            else:
+                primary_image_href = None
+        else:
+            content = None
+            primary_image_href = None
 
         #Save recipe
         recipe = Recipe(
@@ -63,8 +69,8 @@ def add_recipe(url, title, owner, source, hash, tags):
                 owner = owner,
                 source = source,
                 hash = hash,
-                content = readable_article,
-                image = recipe_img,
+                content = content,
+                image = primary_image_href,
                 )
         recipe.save()
         recipe.tags.add(*tags)

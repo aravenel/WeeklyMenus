@@ -56,3 +56,5 @@ DEBUG = True
 STATIC_ROOT = '/srv/www/menus-dev/static_files'
 
 BROKER_URL = 'redis://localhost:6379/0'
+
+DIFFBOT_API_KEY = DIFFBOT_API_KEY
