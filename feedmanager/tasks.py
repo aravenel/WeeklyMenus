@@ -1,4 +1,3 @@
-import json
 import datetime
 from recipemanager.tasks import add_recipe
 from celery.task import task
@@ -27,7 +26,7 @@ def update_feed_pinboard(feed, user):
     r = requests.get(feed_url)
 
     if r.status_code == 200:
-        recipes = json.loads(r.content)
+        recipes = r.json()
         print "%s NEW RECIPES FROM PINBOARD" % len(recipes)
 
         #Mark completion time so that we know when feed was updated

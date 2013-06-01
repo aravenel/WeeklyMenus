@@ -37,7 +37,7 @@ def add_recipe(url, title, owner, source, hash, tags):
         #Get recipe contents (scrape!)
         #HTML to be saved as content of recipe, as parsed by Readability
         # readable_article = Document(html).summary(html_partial=True)
-        payload = {'url': url, 'token': settings.DIFFBOT_API_KEY}
+        payload = {'url': url, 'token': settings.DIFFBOT_API_KEY, 'html': True}
         r = requests.get('http://www.diffbot.com/api/article', params=payload)
         if r.status_code == 200:
             diffbot = r.json()
