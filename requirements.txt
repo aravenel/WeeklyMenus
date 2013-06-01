@@ -22,3 +22,5 @@ readability-lxml
 BeautifulSoup
 mysql-python
 gunicorn
+pil
+sorl-thumbnail

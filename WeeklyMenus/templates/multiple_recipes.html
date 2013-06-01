@@ -1,3 +1,4 @@
+{% load thumbnail %}
 <div>
   <p style="float: left">
     Per Page: <a href="?page={{recipes.number}}&sort={{sort}}&perpage=20">20</a> |
@@ -15,6 +16,9 @@
 
 <div style="clear:both;">
 {% for recipe in recipes %}
+  {% thumbnail recipe.image "50x50" crop="center" as im %}
+  <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+  {% endthumbnail %}
   <p>
       <a href="/recipes/{{recipe.id}}">{{recipe.title}}</a><br />
       {% for tag in recipe.tags.all %}

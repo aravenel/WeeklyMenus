@@ -37,7 +37,8 @@ INSTALLED_APPS = (
     'feedmanager',
     'djcelery',
     'taggit_templatetags',
-    #'debug_toolbar',
+    'debug_toolbar',
+    'sorl.thumbnail'
 )
 
 MIDDLEWARE_CLASSES = (
