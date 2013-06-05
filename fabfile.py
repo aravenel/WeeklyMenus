@@ -135,7 +135,7 @@ def provision():
     #install basic background
     sudo('apt-get -qq update')
     # sudo('apt-get -y -qq upgrade')
-    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev supervisor vim libjpeg62 libjpeg62-dev zliblg-dev')
+    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev supervisor vim libjpeg62 libjpeg62-dev zlib1g-dev')
     sudo('update-rc.d nginx defaults')
     #install python packages
     sudo('pip install virtualenv virtualenvwrapper')

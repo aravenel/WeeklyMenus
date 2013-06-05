@@ -15,17 +15,21 @@
 </div>
 
 <div style="clear:both;">
-{% for recipe in recipes %}
-  {% thumbnail recipe.image "50x50" crop="center" as im %}
-  <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-  {% endthumbnail %}
-  <p>
-      <a href="/recipes/{{recipe.id}}">{{recipe.title}}</a><br />
-      {% for tag in recipe.tags.all %}
-      <small><a href="/recipes/tags/{{tag.name}}">{{tag.name}}</a></small>
-      {% endfor %}
-  </p>
-{% endfor %}
+{% if recipes|length == 0 %}
+<p><strong>No recipes, why don't you add some?</strong></p>
+{% else %}
+  {% for recipe in recipes %}
+    {% thumbnail recipe.image "50x50" crop="center" as im %}
+    <img src="{{MEDIA_URL}}{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}
+    <p>
+        <a href="/recipes/{{recipe.id}}">{{recipe.title}}</a><br />
+        {% for tag in recipe.tags.all %}
+        <small><a href="/recipes/tags/{{tag.name}}">{{tag.name}}</a></small>
+        {% endfor %}
+    </p>
+  {% endfor %}
+{% endif %}
 </div>
 
 <div class="pagination pagination-right">
