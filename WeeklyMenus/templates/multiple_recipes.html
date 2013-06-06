@@ -19,15 +19,23 @@
 <p><strong>No recipes, why don't you add some?</strong></p>
 {% else %}
   {% for recipe in recipes %}
+  <div class="row">
+    <div class="span1">
     {% thumbnail recipe.image "50x50" crop="center" as im %}
-    <img src="{{MEDIA_URL}}{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" float="left"\>
+    {% empty %}
+    <p align='center'><i class='icon-question-sign'></i></p>
     {% endthumbnail %}
+    </div>
+    <div class='span7'>
     <p>
         <a href="/recipes/{{recipe.id}}">{{recipe.title}}</a><br />
         {% for tag in recipe.tags.all %}
         <small><a href="/recipes/tags/{{tag.name}}">{{tag.name}}</a></small>
         {% endfor %}
     </p>
+    </div>
+  </div>
   {% endfor %}
 {% endif %}
 </div>
