@@ -144,6 +144,8 @@ INSTALLED_APPS = (
     'feedmanager',
 )
 
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -157,17 +159,61 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s',
+            'datefmt': '%m-%d-%Y %H:%M:%S'
+        },
+    },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+        'logfile': {
+            'level': 'INFO',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(SITE_ROOT, 'logfile.log'),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'standard'
+        },
+        'debug_logfile': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(SITE_ROOT, 'debug_logfile.log'),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'standard'
+        },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+        '': {
+            'handlers': ['logfile'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['logfile'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'feedmanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'recipemanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'menumanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'WeeklyMenus': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     }
@@ -192,3 +238,5 @@ AJAX_SELECT_INLINES = 'inline'
 #TAGGIT_AUTOSUGGEST_STATIC_BASE_URL = os.path.join()
 
 TAGGIT_TAGCLOUD_MIN = 2
+
+INTERCEPT_REDIRECTS = False

@@ -2,6 +2,9 @@ from models import Recipe
 from celery.task import task
 from django.conf import settings
 import requests
+import logging
+
+log = logging.getLogger(__name__)
 
 def clean_url_parameters(url):
     """Clean up URL parameter cruft. Inspired by pinboard.

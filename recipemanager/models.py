@@ -9,6 +9,9 @@ from crispy_forms.layout import Submit, Layout, Field, Reset
 from ajax_select.fields import AutoCompleteSelectField
 #from taggit.managers import TaggableManager
 from taggit_autosuggest.managers import TaggableManager
+import logging
+
+log = logging.getLogger(__name__)
 
 # Create your models here.
 class Recipe(models.Model):

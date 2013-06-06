@@ -4,7 +4,10 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import logging
 # Create your views here.
+
+log = logging.getLogger(__name__)
 
 #Dict of valid sorts and their sort order (asc, desc)
 valid_sorts = {
