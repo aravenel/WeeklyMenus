@@ -68,3 +68,6 @@ DIFFBOT_API_KEY = DIFFBOT_API_KEY
 MEDIA_ROOT = '/srv/www/menus-dev/media'
 MEDIA_URL = '/media/'
 
+LOGGING['handlers']['logfile']['filename'] = r'/srv/www/menus-dev/http/logs/logfile.log'
+LOGGING['handlers']['debug_logfile']['filename'] = r'/srv/www/menus-dev/http/logs/debug_logfile.log'
+LOGGING['handlers']['default_logger']['filename'] = r'/srv/www/menus-dev/http/logs/default.log'

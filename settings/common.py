@@ -172,7 +172,7 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(SITE_ROOT, 'logfile.log'),
             'maxBytes': 1024*1024*5,
-            'backupCount': 5,
+            'backupCount': 3,
             'formatter': 'standard'
         },
         'debug_logfile': {
@@ -184,11 +184,20 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard'
         },
+        'default_logger': {
+            'level': 'WARNING',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(SITE_ROOT, 'default.log'),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
     },
     'loggers': {
         '': {
-            'handlers': ['logfile'],
-            'level': 'INFO',
+            'handlers': ['default_logger'],
+            'level': 'WARNING',
             'propagate': True,
         },
         'django': {

@@ -1,10 +1,11 @@
 from models import Recipe
 from celery.task import task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
 import logging
 
-log = logging.getLogger(__name__)
+log = get_task_logger(__name__)
 
 def clean_url_parameters(url):
     """Clean up URL parameter cruft. Inspired by pinboard.
@@ -12,6 +13,8 @@ def clean_url_parameters(url):
 
     url_parts = url.split("?")
     root = url_parts[0]
+
+    log.debug('URL before cleaning: %s' % url)
 
     if len(url_parts) > 1:
         params = url_parts[1].split("&")
@@ -23,6 +26,8 @@ def clean_url_parameters(url):
     else:
         cleaned_url = url
 
+    log.debug('Cleaned URL: %s' % cleaned_url)
+
     return cleaned_url
 
 @task
@@ -31,17 +36,18 @@ def add_recipe(url, title, owner, source, hash, tags):
     parse recipe contents, etc."""
     try:
         recipe = Recipe.objects.get(owner=owner, hash=hash)
-        print "RECIPE WITH THIS HASH ALREADY EXISTS"
-        print title
+        log.warning('Recipe already exists with this hash. URL: %s' % url)
     except Recipe.DoesNotExist:
-        print "NEW RECIPE FOUND"
+        log.debug('New recipe found--adding.')
         url = clean_url_parameters(url)
 
         #Get recipe contents (scrape!)
         #HTML to be saved as content of recipe, as parsed by Readability
         # readable_article = Document(html).summary(html_partial=True)
+        log.debug('Scraping contents from diffbot')
         payload = {'url': url, 'token': settings.DIFFBOT_API_KEY, 'html': True}
         r = requests.get('http://www.diffbot.com/api/article', params=payload)
+        log.debug('Diffbot returned status %s' % r.status_code)
         if r.status_code == 200:
             diffbot = r.json()
             content = diffbot['text']
@@ -62,6 +68,7 @@ def add_recipe(url, title, owner, source, hash, tags):
             else:
                 primary_image_href = None
         else:
+            log.warning('Diffbot returned status of %s for recipe with URL %s. Cannot scrape.' % (r.status_code, url))
             content = None
             primary_image_href = None
 
