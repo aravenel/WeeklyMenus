@@ -2,11 +2,11 @@ import datetime
 from recipemanager.tasks import add_recipe
 from celery.task import task
 from celery import group
+from celery.utils.log import get_task_logger
 import requests
 import logging
 
-log = logging.getLogger(__name__)
-print __name__
+log = get_task_logger(__name__)
 
 @task
 def update_feed(feed, request):
@@ -15,6 +15,7 @@ def update_feed(feed, request):
 @task
 def update_feed_pinboard(feed, user):
     """Get pinboard feed of recipes and kick of subtasks to process them"""
+    log.info('Updating pinboard feed for user %s' % user.username)
     feed_url = 'https://api.pinboard.in/v1/posts/all'
     if feed.updated is not None:
         log.info("Feed last updated at %s" % feed.updated.strftime('%Y-%m-%dT%H:%M:%SZ'))

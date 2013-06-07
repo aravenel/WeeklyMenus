@@ -211,11 +211,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'WeeklyMenus': {
-            'handlers': ['logfile', 'debug_logfile'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
     }
 }
 
@@ -240,3 +235,5 @@ AJAX_SELECT_INLINES = 'inline'
 TAGGIT_TAGCLOUD_MIN = 2
 
 INTERCEPT_REDIRECTS = False
+
+CELERYD_HIJACK_ROOT_LOGGER = False

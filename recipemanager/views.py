@@ -133,6 +133,10 @@ def all(request, tag=None):
     page = request.GET.get('page')
     perpage = request.GET.get('perpage')
 
+    log.debug('sort = %s' % sort)
+    log.debug('page = %s' % page)
+    log.debug('perpage = %s' % perpage)
+
     if perpage is not None:
         try:
             perpage = int(perpage)
