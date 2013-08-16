@@ -83,3 +83,9 @@ class RecipeTestCase(TestCase):
 		response = self.client.get('%s?sort=rating' % url)
 		self.assertEqual(response.status_code, 200)
 		self.assertTrue(response.context['recipes'][0].title, '333')
+
+	def test_view_view(self):
+		recipe = Recipe.objects.all()[0]
+		url = reverse('recipemanager.views.view', args=[recipe.id])
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
