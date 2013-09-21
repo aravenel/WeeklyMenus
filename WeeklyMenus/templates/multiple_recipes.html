@@ -1,16 +1,27 @@
 {% load thumbnail %}
 <div>
   <p style="float: left">
-    Per Page: <a href="?page={{recipes.number}}&sort={{sort}}&perpage=20">20</a> |
-    <a href="?page={{recipes.number}}&sort={{sort}}&perpage=40">40</a> |
-    <a href="?page={{recipes.number}}&sort={{sort}}&perpage=100">100</a>
+  Per Page:
+    {% for pp in valid_perpage %}
+        {% if pp = request.session.perpage %}
+        <strong><a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a></strong>
+        {% else %}
+        <a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a>
+        {% endif %}
+        {% if not forloop.last %} | {% endif %}
+    {% endfor %}
   </p>
 
   <p style="float: right">
-    Sort By: <a href="?page={{recipes.number}}&sort=title">Title</a> |
-    <a href="?page={{recipes.number}}&sort=made_count">Made Count</a> |
-    <a href="?page={{recipes.number}}&sort=last_made">Last Made</a> |
-    <a href="?page={{recipes.number}}&sort=rating">Rating</a>
+    Sort By:
+    {% for sort, sort_values in valid_sorts.items %}
+        {% if sort = request.session.sort %}
+            <strong><a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a></strong>
+        {% else %}
+        <a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a>
+        {% endif %}
+        {% if not forloop.last %} |{% endif %}
+    {% endfor %}
   </p>
 </div>
 
@@ -43,20 +54,20 @@
 <div class="pagination pagination-right">
   <ul>
   {% if recipes.has_previous %}
-  <li><a href="?page={{recipes.previous_page_number}}&sort={{sort}}">Prev</a></li>
+  <li><a href="?page={{recipes.previous_page_number}}">Prev</a></li>
   {% else %}
   <li class="disabled"><a href="#">Prev</a></li>
   {% endif %}
 
   {% if show_first %}
-  <li><a href="?page=1&sort={{sort}}">1</a></li>
+  <li><a href="?page=1">1</a></li>
   <li class="disabled"><a href="#">...</a></li>
   {% endif %}
   {% for page in page_numbers %}
     {% if page == recipes.number %}
-    <li class="active"><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+    <li class="active"><a href="?page={{page}}">{{page}}</a></li>
     {% else %}
-    <li><a href="?page={{page}}&sort={{sort}}">{{page}}</a></li>
+    <li><a href="?page={{page}}">{{page}}</a></li>
     {% endif %}
   {% endfor %}
   {% if show_last %}
@@ -65,7 +76,7 @@
   {% endif %}
 
   {% if recipes.has_next %}
-  <li><a href="?page={{recipes.next_page_number}}&sort={{sort}}">Next</a></li>
+  <li><a href="?page={{recipes.next_page_number}}">Next</a></li>
   {% else %}
   <li class="disabled"><a href="#">Next</a></li>
   {% endif %}

@@ -4,18 +4,12 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
+from django.conf import settings
 import logging
 # Create your views here.
 
 log = logging.getLogger(__name__)
-
-#Dict of valid sorts and their sort order (asc, desc)
-valid_sorts = {
-        'title': 'asc',
-        'made_count': 'desc',
-        'last_made': 'desc',
-        'rating': 'desc',
-        }
 
 def build_paginator(page, adjacent_pages=3):
     """Helper function to build paginator with N number of adjacent pages and
@@ -44,7 +38,7 @@ def index(request):
             recipe.source = "web"
             recipe.save()
             add_form.save_m2m()
-            return redirect('/recipes')
+            return redirect(reverse('recipemanager.view.all'))
     else:
         add_form = RecipeForm()
 
@@ -132,7 +126,7 @@ def all(request, tag=None):
 
     #Set sort session variable
     if 'sort' in request.GET:
-        if request.GET.get('sort') not in valid_sorts.keys():
+        if request.GET.get('sort') not in settings.VALID_RECIPE_SORTS.keys():
             sort_by = 'title'
         else:
             sort_by = request.GET.get('sort')
@@ -143,7 +137,7 @@ def all(request, tag=None):
     if 'perpage' in request.GET:
         try:
             perpage = int(request.GET.get('perpage'))
-            if perpage not in [20, 40, 100]:
+            if perpage not in settings.VALID_RECIPES_PERPAGE:
                 perpage = 20
         except ValueError:
             perpage = 20
@@ -157,11 +151,11 @@ def all(request, tag=None):
     log.debug('perpage = %s' % perpage)
 
     #If invalid sort key specified, sort by title
-    if sort not in valid_sorts.keys():
+    if sort not in settings.VALID_RECIPE_SORTS.keys():
         sort = 'title'
 
     #Form the sort string to make sure we sort correctly in asc/desc order
-    if valid_sorts[sort] == 'desc':
+    if settings.VALID_RECIPE_SORTS[sort]['sort_by'] == 'desc':
         sort_string = '-%s' % sort
     else:
         sort_string = sort
@@ -190,8 +184,8 @@ def all(request, tag=None):
             'all_recipes.html',
             {
                 'recipes': recipes,
-                #'sort': sort,
-                #'perpage': perpage,
+                'valid_sorts': settings.VALID_RECIPE_SORTS,
+                'valid_perpage': settings.VALID_RECIPES_PERPAGE,
                 'recipe_search_form': recipe_search_form,
                 'title': title,
                 'page_numbers': page_numbers,
@@ -207,28 +201,34 @@ def search(request):
         recipe_search_form = RecipeSearchForm(request.POST)
         if recipe_search_form.is_valid():
             term = recipe_search_form.cleaned_data['term']
-            sort = request.GET.get('sort')
             page = request.GET.get('page')
-            perpage = request.GET.get('perpage')
 
-            if perpage is not None:
+            #Set sort session variable
+            if 'sort' in request.GET:
+                if request.GET.get('sort') not in settings.VALID_RECIPE_SORTS.keys():
+                    sort_by = 'title'
+                else:
+                    sort_by = request.GET.get('sort')
+                request.session['sort'] = sort_by
+            sort = request.session.get('sort', 'title')
+
+            #Set perpage session variable
+            if 'perpage' in request.GET:
                 try:
-                    perpage = int(perpage)
-                    if perpage not in [20, 40, 100]:
+                    perpage = int(request.GET.get('perpage'))
+                    if perpage not in settings.VALID_RECIPES_PERPAGE:
                         perpage = 20
                 except ValueError:
                     perpage = 20
-
                 request.session['perpage'] = perpage
-
-            user_perpage = request.session.get('perpage', 20)
+            perpage = request.session.get('perpage', 20)
 
             #If invalid sort key specified, sort by title
-            if sort not in valid_sorts.keys():
+            if sort not in settings.VALID_RECIPE_SORTS.keys():
                 sort = 'title'
 
             #Form the sort string to make sure we sort correctly in asc/desc order
-            if valid_sorts[sort] == 'desc':
+            if settings.VALID_RECIPE_SORTS[sort]['sort_by'] == 'desc':
                 sort_string = '-%s' % sort
             else:
                 sort_string = sort
@@ -239,7 +239,7 @@ def search(request):
 
             #Get title matches and create paginator items
             title_matches = Recipe.objects.filter(owner=request.user, title__icontains=term).order_by(sort_string)
-            paginator = Paginator(title_matches, user_perpage)
+            paginator = Paginator(title_matches, perpage)
 
             try:
                 recipes = paginator.page(page)
@@ -261,6 +261,8 @@ def search(request):
                     'title_matches': title_matches,
                     'recipes': recipes,
                     'tag_matches': tag_matches,
+                    'valid_sorts': settings.VALID_RECIPE_SORTS,
+                    'valid_perpage': settings.VALID_RECIPES_PERPAGE,
                     'recipe_search_form': recipe_search_form,
                     'page_numbers': page_numbers,
                     'show_first': 1 not in page_numbers,
@@ -269,4 +271,4 @@ def search(request):
                 context_instance = RequestContext(request)
                 )
     else:
-        return redirect('/recipes/all')
+        return redirect(reverse('recipemanager.views.all'))

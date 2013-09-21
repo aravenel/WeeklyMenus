@@ -251,3 +251,26 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 CELERYD_HIJACK_ROOT_LOGGER = False
+
+#Dict of valid sorts and their sort order (asc, desc)
+VALID_RECIPE_SORTS = {
+    'title': {
+        'display': 'Title',
+        'sort_by': 'asc',
+    },
+    'made_count': {
+        'display': 'Made Count',
+        'sort_by': 'desc',
+    },
+    'last_made': {
+        'display': 'Last Made',
+        'sort_by': 'desc',
+    },
+    'rating': {
+        'display': 'Rating',
+        'sort_by': 'desc',
+    },
+}
+
+#Valid number of recipes per page
+VALID_RECIPES_PERPAGE = [20, 40, 100]
