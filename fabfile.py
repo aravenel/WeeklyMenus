@@ -143,11 +143,19 @@ def provision():
     sudo('mkdir -p /srv/www/menus-dev')
     sudo('mkdir -p /srv/www/menus-dev/logs')
     sudo('chown %s /srv/www/menus-dev/logs' % env.run_user)
+    #FIX THIS FOR REAL
+    sudo('chmod -R 777 /srv/www/menus-dev/logs')
+
+    sudo('mkdir -p /srv/www/menus-dev/http/logs')
+    sudo('chown %s /srv/www/menus-dev/http/logs' % env.run_user)
+    #FIX THIS FOR REAL
+    sudo('chmod -R 777 /srv/www/menus-dev/http/logs')
     # run('mkdir -p ~/apps/menus-staging')
     #config files
     if env.environment == 'vagrant':
         put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
         put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/supervisord.conf', use_sudo=True)
+        #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
         with settings(warn_only=True):
             sudo('service nginx restart')
             sudo('service supervisor restart')

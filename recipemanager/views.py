@@ -18,10 +18,10 @@ valid_sorts = {
         }
 
 def build_paginator(page, adjacent_pages=3):
-    """Helper function to build paginator with N number of adjacent pages and 
-    ellipses back until the first and last pages. Helpful for large number of 
+    """Helper function to build paginator with N number of adjacent pages and
+    ellipses back until the first and last pages. Helpful for large number of
     pages.
-    
+
     Returns a list with the numbers of pages (1 indexed) that should be displayed.
     """
     start_page = max(page.number - adjacent_pages, 1)
@@ -129,25 +129,32 @@ def delete(request, recipe_id):
 def all(request, tag=None):
     #recipe_search_form = RecipeAjaxSearchForm()
     recipe_search_form = RecipeSearchForm()
-    sort = request.GET.get('sort')
-    page = request.GET.get('page')
-    perpage = request.GET.get('perpage')
 
-    log.debug('sort = %s' % sort)
-    log.debug('page = %s' % page)
-    log.debug('perpage = %s' % perpage)
+    #Set sort session variable
+    if 'sort' in request.GET:
+        if request.GET.get('sort') not in valid_sorts.keys():
+            sort_by = 'title'
+        else:
+            sort_by = request.GET.get('sort')
+        request.session['sort'] = sort_by
+    sort = request.session.get('sort', 'title')
 
-    if perpage is not None:
+    #Set perpage session variable
+    if 'perpage' in request.GET:
         try:
-            perpage = int(perpage)
+            perpage = int(request.GET.get('perpage'))
             if perpage not in [20, 40, 100]:
                 perpage = 20
         except ValueError:
             perpage = 20
-
         request.session['perpage'] = perpage
+    perpage = request.session.get('perpage', 20)
 
-    user_perpage = request.session.get('perpage', 20)
+    page = request.GET.get('page')
+
+    log.debug('sort = %s' % sort)
+    log.debug('page = %s' % page)
+    log.debug('perpage = %s' % perpage)
 
     #If invalid sort key specified, sort by title
     if sort not in valid_sorts.keys():
@@ -168,7 +175,7 @@ def all(request, tag=None):
         title = 'Recipes with tag "%s"' % tag
 
     #Build the paginator
-    paginator = Paginator(all_recipes, user_perpage)
+    paginator = Paginator(all_recipes, perpage)
     try:
         recipes = paginator.page(page)
     except PageNotAnInteger:
@@ -183,8 +190,8 @@ def all(request, tag=None):
             'all_recipes.html',
             {
                 'recipes': recipes,
-                'sort': sort,
-                'perpage': perpage,
+                #'sort': sort,
+                #'perpage': perpage,
                 'recipe_search_form': recipe_search_form,
                 'title': title,
                 'page_numbers': page_numbers,

@@ -170,7 +170,8 @@ LOGGING = {
             'level': 'INFO',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(SITE_ROOT, 'logfile.log'),
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'logfile.log'),
+            'filename': '/srv/www/menus-dev/logs/logfile.log',
             'maxBytes': 1024*1024*5,
             'backupCount': 3,
             'formatter': 'standard'
@@ -179,7 +180,8 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(SITE_ROOT, 'debug_logfile.log'),
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'debug_logfile.log'),
+            'filename': '/srv/www/menus-dev/logs/debug_logfile.log',
             'maxBytes': 1024*1024*5,
             'backupCount': 5,
             'formatter': 'standard'
@@ -188,7 +190,8 @@ LOGGING = {
             'level': 'WARNING',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(SITE_ROOT, 'default.log'),
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            'filename': '/srv/www/menus-dev/logs/default.log',
             'maxBytes': 1024*1024*5,
             'backupCount': 2,
             'formatter': 'standard'

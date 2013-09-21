@@ -7,4 +7,4 @@ errorlog = '/srv/www/menus-dev/logs/g-error.log'
 accesslog = '/srv/www/menus-dev/logs/g-access.log'
 # django_settings = 'settings.staging'
 django_settings = 'settings.vagrant'
-pythonpath = "/srv/www/menus-dev/http"
+pythonpath = "/srv/www/menus-dev/http/vagrant"
