@@ -2,28 +2,52 @@
 <div>
   <p style="float: left">
   Per Page:
-    {% for pp in valid_perpage %}
-        {% if pp = request.session.perpage %}
-        <strong><a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a></strong>
-        {% else %}
-        <a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a>
-        {% endif %}
-        {% if not forloop.last %} | {% endif %}
-    {% endfor %}
+    {% if term %}
+        {% for pp in valid_perpage %}
+            {% if pp = request.session.perpage %}
+            <strong><a href="?term={{term}}&page={{recipes.number}}&perpage={{pp}}">{{pp}}</a></strong>
+            {% else %}
+            <a href="?term={{term}}&page={{recipes.number}}&perpage={{pp}}">{{pp}}</a>
+            {% endif %}
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+    {% else %}
+        {% for pp in valid_perpage %}
+            {% if pp = request.session.perpage %}
+            <strong><a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a></strong>
+            {% else %}
+            <a href="?page={{recipes.number}}&perpage={{pp}}">{{pp}}</a>
+            {% endif %}
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+    {% endif %}
   </p>
 
   <p style="float: right">
     Sort By:
-    {% for sort, sort_values in valid_sorts.items %}
-        {% if sort = request.session.sort %}
-            <strong><a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a></strong>
-        {% else %}
-        <a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a>
-        {% endif %}
-        {% if not forloop.last %} |{% endif %}
-    {% endfor %}
+    {% if term %}
+        {% for sort, sort_values in valid_sorts.items %}
+            {% if sort = request.session.sort %}
+            <strong><a href="?term={{term}}&page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a></strong>
+            {% else %}
+            <a href="?term={{term}}&page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a>
+            {% endif %}
+            {% if not forloop.last %} |{% endif %}
+        {% endfor %}
+    {% else %}
+        {% for sort, sort_values in valid_sorts.items %}
+            {% if sort = request.session.sort %}
+                <strong><a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a></strong>
+            {% else %}
+            <a href="?page={{recipes.number}}&sort={{sort}}">{{sort_values.display}}</a>
+            {% endif %}
+            {% if not forloop.last %} |{% endif %}
+        {% endfor %}
+    {% endif %}
   </p>
 </div>
+
+
 
 <div style="clear:both;">
 {% if recipes|length == 0 %}
@@ -51,34 +75,61 @@
 {% endif %}
 </div>
 
+
+
+
 <div class="pagination pagination-right">
   <ul>
   {% if recipes.has_previous %}
-  <li><a href="?page={{recipes.previous_page_number}}">Prev</a></li>
+    {% if term %}
+        <li><a href="?term={{term}}&page={{recipes.previous_page_number}}">Prev</a></li>
+    {% else %}
+        <li><a href="?page={{recipes.previous_page_number}}">Prev</a></li>
+    {% endif %}
   {% else %}
   <li class="disabled"><a href="#">Prev</a></li>
   {% endif %}
 
   {% if show_first %}
-  <li><a href="?page=1">1</a></li>
+    {% if term %}
+    <li><a href="?term={{term}}&page=1">1</a></li>
+    {% else %}
+        <li><a href="?page=1">1</a></li>
+    {% endif %}
   <li class="disabled"><a href="#">...</a></li>
   {% endif %}
   {% for page in page_numbers %}
     {% if page == recipes.number %}
-    <li class="active"><a href="?page={{page}}">{{page}}</a></li>
+        {% if term %}
+        <li class="active"><a href="?term={{term}}&page={{page}}">{{page}}</a></li>
+        {% else %}
+            <li class="active"><a href="?page={{page}}">{{page}}</a></li>
+        {% endif %}
     {% else %}
-    <li><a href="?page={{page}}">{{page}}</a></li>
+        {% if term %}
+            <li><a href="?term={{term}}&page={{page}}">{{page}}</a></li>
+        {% else %}
+            <li><a href="?page={{page}}">{{page}}</a></li>
+        {% endif %}
     {% endif %}
   {% endfor %}
   {% if show_last %}
-  <li class="disabled"><a href="#">...</a></li>
-  <li><a href="?page={{recipes.paginator.num_pages}}">{{recipes.paginator.num_pages}}</a></li>
+    <li class="disabled"><a href="#">...</a></li>
+    {% if term %}
+    <li><a href="?term={{term}}&page={{recipes.paginator.num_pages}}">{{recipes.paginator.num_pages}}</a></li>
+    {% else %}
+        <li><a href="?page={{recipes.paginator.num_pages}}">{{recipes.paginator.num_pages}}</a></li>
+    {% endif %}
   {% endif %}
 
   {% if recipes.has_next %}
-  <li><a href="?page={{recipes.next_page_number}}">Next</a></li>
+    {% if term %}
+    <li><a href="?term={{term}}&page={{recipes.next_page_number}}">Next</a></li>
+    {% else %}
+        <li><a href="?page={{recipes.next_page_number}}">Next</a></li>
+    {% endif %}
   {% else %}
-  <li class="disabled"><a href="#">Next</a></li>
+    <li class="disabled"><a href="#">Next</a></li>
   {% endif %}
   </ul>
 </div>

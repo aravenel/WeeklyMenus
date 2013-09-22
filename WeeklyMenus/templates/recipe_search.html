@@ -38,9 +38,11 @@
     <div class="span12">
         <h3 style="padding-top: 15px;">Tags</h3>
         {% if tag_matches|length > 0 %}
-            {% for tag_match in tag_matches %}
-            <a href="/recipes/tags/{{tag_match}}">{{tag_match}}</a>
-            {% endfor %}
+            <div style="padding-bottom: 15px;"><p>
+                {% for tag_match in tag_matches %}
+                <a href="/recipes/tags/{{tag_match}}">{{tag_match}}</a>
+                {% endfor %}
+            </div></p>
         {% else %}
             <p>No matching tags.</p>
         {% endif %}

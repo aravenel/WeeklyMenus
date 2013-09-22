@@ -197,8 +197,8 @@ def all(request, tag=None):
 
 @login_required
 def search(request):
-    if request.method == 'POST':
-        recipe_search_form = RecipeSearchForm(request.POST)
+    if request.method == 'GET':
+        recipe_search_form = RecipeSearchForm(request.GET)
         if recipe_search_form.is_valid():
             term = recipe_search_form.cleaned_data['term']
             page = request.GET.get('page')

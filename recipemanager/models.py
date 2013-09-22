@@ -132,7 +132,7 @@ class RecipeSearchForm(Form):
         self.helper = FormHelper()
         self.helper.form_id = 'RecipeSearch'
         self.helper.form_class = "form-search"
-        self.helper.form_method = "post"
+        self.helper.form_method = "get"
         self.helper.form_action = "/recipes/search/"
         self.helper.layout = Layout(
                 Field('term', css_class='input-xxlarge'),
