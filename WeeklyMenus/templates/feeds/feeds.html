@@ -24,6 +24,7 @@
             <thead>
                 <th>Feed</th>
                 <th>Last Checked for Updates</th>
+                <th>Status</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -37,6 +38,7 @@
                 {% else %}
                     <td>{{feed.updated}}</td>
                 {% endif %}
+                <td>{{feed.status}}</td>
                 <td><a href="/feeds/{{feed.id}}/update?next={{request.path}}" class="btn">Check for Updates</a></td>
                 <td><a href="/feeds/{{feed.id}}" class="btn">Edit</a></td>
                 <td><a href="/feeds/{{feed.id}}/delete" class="btn btn-danger">Delete</a></td>

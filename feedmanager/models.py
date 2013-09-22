@@ -19,6 +19,7 @@ class RecipeFeed(models.Model):
     owner = models.ForeignKey(User)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(blank=True, null=True)
+    celery_task_id = models.CharField(max_length=200, blank=True, null=True)
 
     def __unicode__(self):
         return "%s feed for %s" % (self.get_feed_type_display(), self.owner)

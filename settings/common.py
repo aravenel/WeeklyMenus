@@ -223,6 +223,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'celery': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 
