@@ -108,4 +108,9 @@ Vagrant.configure("2") do |config|
   # chef-validator, unless you changed the configuration.
   #
   #   chef.validation_client_name = "ORGNAME-validator"
+
+  # Set the timezone to the host timezone
+  require 'time'
+  timezone = 'America/New_York' + ((Time.zone_offset(Time.now.zone)/60)/60).to_s
+  config.vm.provision :shell, :inline => "if [ $(grep -c UTC /etc/timezone) -gt 0 ]; then echo \"#{timezone}\" | sudo tee /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata; fi"
 end

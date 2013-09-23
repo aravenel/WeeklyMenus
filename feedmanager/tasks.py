@@ -1,5 +1,5 @@
-import datetime
 from recipemanager.tasks import add_recipe
+from django.utils import timezone
 from celery.task import task
 from celery import group
 from celery.utils.log import get_task_logger
@@ -47,7 +47,7 @@ def update_feed_pinboard(feed_id, session=None):
             #Mark completion time so that we know when feed was updated
             #NOTE: This leaves small gap of time b/t calling of task and finishing
             #of task where new recipes could be added but not picked up!
-            feed.updated = datetime.datetime.utcnow()
+            feed.updated = timezone.now()
             feed.save()
 
             if len(recipes) > 0:
