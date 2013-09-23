@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Submit, Layout, Field, Reset
+from celery import result
 
 
 # Create your models here.
@@ -23,6 +24,15 @@ class RecipeFeed(models.Model):
 
     def __unicode__(self):
         return "%s feed for %s" % (self.get_feed_type_display(), self.owner)
+
+    def ready_to_update(self):
+        """Return true if celery_task_id is None (never run) or 0 (no new recipes at last run).
+        Else check celery result ready() status to determine if prev job still running."""
+        if not self.celery_task_id or self.celery_task_id == '0':
+            return True
+        else:
+            prev_result = result.GroupResult.restore(self.celery_task_id)
+            return prev_result.ready()
 
 class RecipeFeedForm(ModelForm):
 

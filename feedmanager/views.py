@@ -3,6 +3,7 @@ from feedmanager.models import RecipeFeed, RecipeFeedForm
 import feedmanager.tasks
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from celery import result
@@ -83,6 +84,10 @@ def delete(request, feed_id):
 @login_required
 def update(request, feed_id):
     """Kick off the celery task to update a recipe feed"""
-    #feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
-    result = feedmanager.tasks.update_feed_pinboard.delay(feed_id)
+    feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
+    if feed.ready_to_update():
+        r = feedmanager.tasks.update_feed_pinboard.delay(feed_id)
+        messages.add_message(request, messages.INFO, "Feed queued for update.")
+    else:
+        messages.add_message(request, messages.WARNING, "A feed update is already running.")
     return redirect(reverse('feedmanager.views.index'))
