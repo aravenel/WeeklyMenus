@@ -150,6 +150,10 @@ def provision():
     sudo('chown %s /srv/www/menus-dev/http/logs' % env.run_user)
     #FIX THIS FOR REAL
     sudo('chmod -R 777 /srv/www/menus-dev/http/logs')
+
+    sudo('mkdir -p /srv/www/menus-dev/media')
+    sudo('mkdir -p /srv/www/menus-dev/media/cache')
+    sudo('chown %s /srv/www/menus-dev/media' % env.run_user)
     # run('mkdir -p ~/apps/menus-staging')
     #config files
     if env.environment == 'vagrant':

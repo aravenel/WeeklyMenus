@@ -30,7 +30,7 @@ def clean_url_parameters(url):
 
     return cleaned_url
 
-@task
+@task(rate_limit=1) #Rate limit of 1/sec due to free version of diffbot API
 def add_recipe(url, title, owner, source, hash, tags):
     """Add a recipe to the database. Eventually will be extended to fetch images,
     parse recipe contents, etc."""

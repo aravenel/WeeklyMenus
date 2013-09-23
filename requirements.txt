@@ -24,3 +24,4 @@ mysql-python
 gunicorn
 pillow
 sorl-thumbnail
+pytz>=2013b
