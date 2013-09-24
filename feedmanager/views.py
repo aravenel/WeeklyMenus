@@ -90,4 +90,6 @@ def update(request, feed_id):
         messages.add_message(request, messages.INFO, "Feed queued for update.")
     else:
         messages.add_message(request, messages.WARNING, "A feed update is already running.")
+        prev_result = result.GroupResult(feed.celery_task_id)
+        messages.add_message(request, messages.INFO, "Celery task state is %s" % prev_result.state)
     return redirect(reverse('feedmanager.views.index'))

@@ -28,10 +28,15 @@ def update_feed_pinboard(feed_id, session=None):
                 feed_time = None
 
             #Check w Pinboard to see when bookmarks last added
+            timestamp_url = 'https://api.pinboard.in/v1/posts/update'
             payload = {
                 'auth_token': feed.feed_apikey,
                 'format': 'json'
             }
+
+            r = requests.get(timestamp_url, params=payload)
+            if r.status_code = 200:
+                update_time = datetime.datetime.strptime(r.json()['update_time'], "%Y-%m-%dT%H:%M:%SZ")
 
             #Get recipes added since last update date
             feed_url = 'https://api.pinboard.in/v1/posts/all'
