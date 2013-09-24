@@ -197,6 +197,16 @@ LOGGING = {
             'backupCount': 2,
             'formatter': 'standard'
         },
+        'celery_logger': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            'filename': '/srv/www/menus-dev/logs/celery.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
     },
     'loggers': {
         '': {
@@ -224,8 +234,8 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'celery': {
-            'handlers': ['logfile', 'debug_logfile'],
+        'celery.task': {
+            'handlers': ['celery_logger'],
             'level': 'DEBUG',
             'propagate': True,
         },
