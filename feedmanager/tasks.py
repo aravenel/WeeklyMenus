@@ -6,6 +6,7 @@ from celery.utils.log import get_task_logger
 from feedmanager.models import RecipeFeed
 import requests
 import datetime
+import pytz
 
 log = get_task_logger(__name__)
 
@@ -27,7 +28,9 @@ def update_feed_pinboard(feed_id, session=None):
 
         r = requests.get(timestamp_url, params=payload)
         if r.status_code == 200:
-            return datetime.datetime.strptime(r.json()['update_time'], "%Y-%m-%dT%H:%M:%SZ")
+            dt = datetime.datetime.strptime(r.json()['update_time'], "%Y-%m-%dT%H:%M:%SZ")
+            dt = dt.replace(tzinfo=pytz.utc)
+            return dt
         else:
             log.error('Pinboard returned response code %s when trying to get last update time.' % r.status_code)
             return None
@@ -36,7 +39,9 @@ def update_feed_pinboard(feed_id, session=None):
         """Return True if there are new recipes on Pinboard"""
         last_update = get_last_update()
         if last_update > feed.updated:
+            log.debug('New bookmarks on pinboard since last check')
             return True
+        log.debug('No new bookmarks on pinboard since last check')
         return False
 
     log.debug("Updating feed ID %s" % feed_id)
