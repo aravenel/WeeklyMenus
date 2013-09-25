@@ -211,6 +211,17 @@ LOGGING = {
             'backupCount': 2,
             'formatter': 'standard'
         },
+        'celery_task_logger': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/celery.log',
+            'filename': '/vagrant/logs/celery_tasks.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
     },
     'loggers': {
         '': {
@@ -238,7 +249,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'celery.task': {
+        'celery.tasks': {
+            'handlers': ['celery_task_logger'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'celery': {
             'handlers': ['celery_logger'],
             'level': 'DEBUG',
             'propagate': True,
