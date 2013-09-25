@@ -1,6 +1,7 @@
 # Django settings for WeeklyMenus project.
 import os
 import djcelery
+import datetime
 
 djcelery.setup_loader()
 
@@ -286,7 +287,17 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
 
+#Celery settings
 CELERYD_HIJACK_ROOT_LOGGER = False
+CELERY_TIMEZONE = 'UTC'
+# CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERYBEAT_SCHEDULE = {
+   'update_all_feeds': {
+        'task': 'feedmanager.tasks.update_all_feeds',
+        'schedule': datetime.timedelta(minutes=60),
+        'args': (),
+   } ,
+}
 
 #Dict of valid sorts and their sort order (asc, desc)
 VALID_RECIPE_SORTS = {
@@ -310,3 +321,4 @@ VALID_RECIPE_SORTS = {
 
 #Valid number of recipes per page
 VALID_RECIPES_PERPAGE = [20, 40, 100]
+

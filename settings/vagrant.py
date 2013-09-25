@@ -1,6 +1,5 @@
 from common import *
 from sys import exit
-import os
 
 try:
     from passwords_staging import *

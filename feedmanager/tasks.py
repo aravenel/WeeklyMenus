@@ -11,11 +11,14 @@ import pytz
 log = get_task_logger(__name__)
 
 @task
-def update_feed(feed, request):
-    pass
+def update_all_feeds(*args, **kwargs):
+    log.info('UPDATING ALL FEEDS')
+    log.debug('%s FEEDS TO UPDATE' % len(RecipeFeed.objects.all()))
+    job = group([update_feed_pinboard.s(feed.id) for feed in RecipeFeed.objects.all()])
+    job.apply_async()
 
 @task
-def update_feed_pinboard(feed_id, session=None):
+def update_feed_pinboard(feed_id):
     """Get pinboard feed of recipes and kick of subtasks to process them"""
 
     def get_last_update():
