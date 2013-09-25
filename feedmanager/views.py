@@ -1,4 +1,4 @@
-import datetime
+import logging
 from feedmanager.models import RecipeFeed, RecipeFeedForm
 import feedmanager.tasks
 from django.shortcuts import render_to_response, redirect, get_object_or_404
@@ -8,6 +8,8 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from celery import result
 # Create your views here.
+
+log = logging.getLogger(__name__)
 
 @login_required
 def index(request):
@@ -86,9 +88,11 @@ def update(request, feed_id):
     """Kick off the celery task to update a recipe feed"""
     feed = get_object_or_404(RecipeFeed, pk=feed_id, owner=request.user)
     if feed.ready_to_update():
+        log.debug('Mode reports ready to update')
         r = feedmanager.tasks.update_feed_pinboard.delay(feed_id)
         messages.add_message(request, messages.INFO, "Feed queued for update.")
     else:
+        log.debug('Model reports not ready to update')
         messages.add_message(request, messages.WARNING, "A feed update is already running.")
         prev_result = result.GroupResult(feed.celery_task_id)
         messages.add_message(request, messages.INFO, "Celery task state is %s" % prev_result.state)
