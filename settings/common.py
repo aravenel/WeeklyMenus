@@ -212,13 +212,24 @@ LOGGING = {
             'backupCount': 2,
             'formatter': 'standard'
         },
-        'celery_task_logger': {
+        'feedmanager_tasks': {
             'level': 'DEBUG',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
             #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
             #'filename': '/srv/www/menus-dev/logs/celery.log',
-            'filename': '/vagrant/logs/celery_tasks.log',
+            'filename': '/vagrant/logs/feedmanager_tasks.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
+        'recipemanager_tasks': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/celery.log',
+            'filename': '/vagrant/logs/recipemanager_tasks.log',
             'maxBytes': 1024*1024*5,
             'backupCount': 2,
             'formatter': 'standard'
@@ -250,8 +261,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'celery.tasks': {
-            'handlers': ['celery_task_logger'],
+        'feedmanager.tasks': {
+            'handlers': ['feedmanager_tasks'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'recipemanager.tasks': {
+            'handlers': ['recipemanager_tasks'],
             'level': 'DEBUG',
             'propagate': True,
         },
