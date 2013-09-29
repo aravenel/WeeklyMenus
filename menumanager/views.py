@@ -1,10 +1,11 @@
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from menumanager.models import WeeklyMenu, WeeklyMenuForm, MenuItem
 from django.contrib.auth.decorators import login_required
-import menumanager
 from recipemanager.models import Recipe, RecipeAjaxForm
 from django.template import RequestContext
+from django.http import HttpResponseBadRequest, HttpResponse
 import datetime
+import menumanager
 
 #Helper functions
 def daterange(start_date, end_date):
@@ -23,7 +24,7 @@ def index(request):
             return redirect('/menus')
     else:
         weekly_menu_form = WeeklyMenuForm()
-    
+
     all_menus = WeeklyMenu.objects.filter(owner=request.user)
     today = datetime.date.today()
     current_menu = None
@@ -35,7 +36,7 @@ def index(request):
             break
 
     upcoming_menus = [menu for menu in all_menus if menu.start_date > today]
-    previous_menus = [menu for menu in all_menus if menu.start_date < today and 
+    previous_menus = [menu for menu in all_menus if menu.start_date < today and
             menu != current_menu]
 
     return render_to_response(
@@ -46,6 +47,7 @@ def index(request):
                 'menu_dict': menu_dict,
                 'upcoming_menus': upcoming_menus,
                 'previous_menus': previous_menus,
+                'host': request.get_host()
             },
             context_instance=RequestContext(request)
             )
@@ -77,13 +79,16 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             }
 
     return render_to_response(
-            'menu_items.html',
+            'menu_items_modal.html',
             {
                 'current_recipes': current_recipes,
                 'recent_recipes': recent_recipes,
                 'popular_recipes': popular_recipes,
                 'info_data': info_data,
                 'recipe_search_form': recipe_search_form,
+                'menu_id': weeklymenu_id,
+                'menu_date': menu_date,
+                'menu_type': menu_type,
             },
             context_instance=RequestContext(request)
             )
@@ -112,6 +117,22 @@ def item_delete(request, item_id):
     return redirect(next)
 
 @login_required
+def ajax_item_delete(request):
+    if request.is_ajax():
+        if request.method == "POST":
+            menuitem_id = request.POST.get('menuitem_id')
+            item = get_object_or_404(MenuItem, pk=menuitem_id, owner=request.user)
+            recipe = item.recipe
+            recipe.made_count -= 1
+            recipe.save()
+            item.delete()
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest("Must be POST")
+    else:
+        return HttpResponseBadRequest("Must be AJAX")
+
+@login_required
 def weekly_menu_view(request, menu_id):
     menu = get_object_or_404(WeeklyMenu, pk=menu_id, owner=request.user)
     menu_dict = menu.build_menu_dict()
@@ -123,3 +144,31 @@ def weekly_menu_view(request, menu_id):
             },
             context_instance=RequestContext(request)
             )
+
+@login_required
+def ajax_add_to_menu(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+
+            #Get POST variables
+            recipe_id = request.POST.get('recipe_id')
+            menu_id = request.POST.get('menu_id')
+            menu_date = request.POST.get('menu_date')
+            menu_type = request.POST.get('menu_type')
+
+            #Get menus and recipes
+            menu = get_object_or_404(WeeklyMenu, pk=menu_id, owner=request.user)
+            recipe = get_object_or_404(Recipe, pk=recipe_id, owner=request.user)
+            dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
+            mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe,
+                    owner=request.user)
+            mi.save()
+
+            recipe.made_count += 1
+            recipe.save()
+
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest("Bad request, must be POST")
+    else:
+        return HttpResponseBadRequest("Bad request, must be AJAX")

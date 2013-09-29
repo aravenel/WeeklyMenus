@@ -3,13 +3,132 @@
 {% block scripts %}
 
 <script type="text/JavaScript">
+    //Date picker
     $(document).ready(function(){
+
+        //Helper functions for CSRF annoyances
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+        //Datepicker code
         $('.datepicker').datepicker({
             format: 'mm/dd/yyyy'
-            }).on('changeDate', function(ev){
-                $(this).datepicker('hide');
+        }).on('changeDate', function(ev){
+            $(this).datepicker('hide');
+        });
+
+        //Modal config
+        $('[data-toggle="modal"]').click(function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            if (url.indexOf('#') == 0) {
+                $(url).modal('open');
+            } else {
+                $.get(url, function(data) {
+                    $('<div class="modal hide fade">' + data + '</div>').modal({
+                        width: 900,
+                    });
                 });
-            })
+            }
+        });
+
+        //Recipe delete ajax
+        $(document).on("click", ".recipe_delete", function(event){
+            event.preventDefault();
+            recipe_id = $(this).attr('recipe_id');
+            $.ajax({
+                url:'/menus/ajax_delete/',
+                dataType: 'json',
+                type: 'POST',
+                data: {'menuitem_id': recipe_id},
+                success: function(data, ret_code, jqHXR){
+                    $(this).remove();
+                },
+                error: function(jqHXR, textStatus, errorThrown){
+                    var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
+                    $('.ajax_errors').append(msg);
+                },
+            });
+        });
+
+        //Autocomplete
+        $(document).on("focus", ".autocomplete", function(event){
+            if (!$(this).data("autocomplete")) {
+                $(this).autocomplete({
+                    autoFocus: true,
+                    minLength: 2,
+                    source: function(request, response) {
+                        $.ajax({
+                            url: '/recipes/ajax_search',
+                            dataType: 'json',
+                            data: {'term': request.term},
+                            success: function(data, ret_code, jqXHR) {
+                                console.log('Returned code ' + ret_code);
+                                console.log(data);
+                                response(data);
+                            },
+                        });
+                    },
+                    select: function(event, ui) {
+                        event.preventDefault();
+                        var menu_id = $('#menu_id').val();
+                        var menu_date = $('#menu_date').val();
+                        var menu_type = $('#menu_type').val();
+                        $.ajax({
+                            url: '/menus/ajax_add_to_menu/',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                'recipe_id': ui.item.value,
+                                'menu_id': menu_id,
+                                'menu_date': menu_date,
+                                'menu_type': menu_type,
+                            },
+                            success: function(data, ret_code, jqHXR){
+                                var recipe = '<div class="alert alert-info">'+ui.item.label+"</div>";
+                                $('.menu_items').append(recipe);
+                                $('#no_recipe_warning').remove();
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
+                                $('.ajax_errors').append(msg);
+                            },
+                        });
+                    },
+                });
+            }
+        });
+
+    });
 </script>
 
 <style type="text/css">

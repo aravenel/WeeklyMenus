@@ -6,7 +6,9 @@ from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.http import HttpResponseBadRequest, HttpResponse
 import logging
+import json
 # Create your views here.
 
 log = logging.getLogger(__name__)
@@ -272,3 +274,14 @@ def search(request):
                 )
     else:
         return redirect(reverse('recipemanager.views.all'))
+
+@login_required
+def ajax_search(request):
+    if request.is_ajax():
+        term = request.GET.get('term')
+        recipes = Recipe.objects.filter(owner=request.user, title__icontains=term)
+        response_data = [{'label': recipe.title, 'value': recipe.id} for recipe in recipes]
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    else:
+        return HttpResponseBadRequest("Bad request, must be AJAX")
+
