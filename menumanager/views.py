@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from recipemanager.models import Recipe, RecipeAjaxForm
 from django.template import RequestContext
 from django.http import HttpResponseBadRequest, HttpResponse
-import datetime
+import datetime, json
 import menumanager
 
 #Helper functions
@@ -167,7 +167,9 @@ def ajax_add_to_menu(request):
             recipe.made_count += 1
             recipe.save()
 
-            return HttpResponse()
+            response_data = {'menuitem_id': mi.id}
+
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
             return HttpResponseBadRequest("Bad request, must be POST")
     else:

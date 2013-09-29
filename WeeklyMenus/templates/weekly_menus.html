@@ -114,9 +114,13 @@
                                 'menu_type': menu_type,
                             },
                             success: function(data, ret_code, jqHXR){
-                                var recipe = '<div class="alert alert-info">'+ui.item.label+"</div>";
+                                var recipe = '<div class="alert alert-info">'+ui.item.label
+                                    + '<button type="button" class="close recipe_delete" '
+                                    + 'data-dismiss="alert" recipe_id='+ data.menuitem_id
+                                    + '>&times;</button></div>';
                                 $('.menu_items').append(recipe);
                                 $('#no_recipe_warning').remove();
+                                $(this).val(null);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
                                 var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';

@@ -1,10 +1,10 @@
 <div class="modal-header">
+    <h2>Menu Items for {{info_data.type}}, {{info_data.date|date:"m/d/y"}}</h2>
 </div>
 
 <div class="modal-body">
 <div class="row">
     <div class="span12 menu_items">
-        <h2>Menu Items for {{info_data.type}}, {{info_data.date|date:"m/d/y"}}</h2>
         {% if current_recipes|length > 0 %}
             {% for menuitem in current_recipes %}
                 <div class="alert alert-info">{{menuitem.recipe.title}}
@@ -25,7 +25,7 @@
     </div>
     <div class="ajax_errors"></div>
     <div class="span12 ui-front">
-        <input type="text" class="input-xxlarge autocomplete" />
+        <input type="text" class="input-xxlarge autocomplete" placeholder="Search for recipes" />
     </div>
 </div>
 
