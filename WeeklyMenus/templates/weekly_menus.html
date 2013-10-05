@@ -120,7 +120,7 @@
                                     + '>&times;</button></div>';
                                 $('.menu_items').append(recipe);
                                 $('#no_recipe_warning').remove();
-                                $(this).val(null);
+                                $('.autocomplete').val(null);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
                                 var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
