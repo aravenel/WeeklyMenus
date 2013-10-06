@@ -86,19 +86,25 @@
                 $(this).autocomplete({
                     autoFocus: true,
                     minLength: 2,
-                    source: function(request, response) {
+                    source: function(request, response) { //Fetch matches via AJAX
                         $.ajax({
                             url: '/recipes/ajax_search',
                             dataType: 'json',
                             data: {'term': request.term},
                             success: function(data, ret_code, jqXHR) {
-                                console.log('Returned code ' + ret_code);
-                                console.log(data);
                                 response(data);
                             },
                         });
                     },
-                    select: function(event, ui) {
+                    response: function(event, ui){  //If no matches, give option to create new recipe
+                        if (ui.content.length === 0){
+                            ui.content.push({
+                                'value': $('.autocomplete').val(),
+                                'label': 'Add new recipe: '+$('.autocomplete').val(),
+                            });
+                        }
+                    },
+                    select: function(event, ui) { //When option selected, add to menu via AJAX
                         event.preventDefault();
                         var menu_id = $('#menu_id').val();
                         var menu_date = $('#menu_date').val();

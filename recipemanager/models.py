@@ -1,6 +1,5 @@
 from django.db import models
 from django.forms import ModelForm, Form, CharField
-from django.forms.widgets import RadioSelect
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions
@@ -15,7 +14,7 @@ log = logging.getLogger(__name__)
 
 # Create your models here.
 class Recipe(models.Model):
-    url = models.URLField(max_length=400)
+    url = models.URLField(null=True, blank=True, max_length=400)
     title = models.CharField(max_length=400)
     added = models.DateTimeField(auto_now_add=True)
     last_made = models.DateTimeField(null=True,blank=True)
