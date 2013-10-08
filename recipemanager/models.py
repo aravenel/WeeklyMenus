@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 # Create your models here.
 class Recipe(models.Model):
-    url = models.URLField(null=True, blank=True, max_length=400)
+    url = models.URLField(blank=True, max_length=400, default=None)
     title = models.CharField(max_length=400)
     added = models.DateTimeField(auto_now_add=True)
     last_made = models.DateTimeField(null=True,blank=True)

@@ -6,11 +6,21 @@ from django.template import RequestContext
 from django.http import HttpResponseBadRequest, HttpResponse
 import datetime, json
 import menumanager
+import logging
 
 #Helper functions
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
         yield start_date + datetime.timedelta(n)
+
+def is_int(value): #Return true if int
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+log = logging.getLogger(__name__)
 
 # Create your views here.
 @login_required
@@ -157,8 +167,16 @@ def ajax_add_to_menu(request):
             menu_type = request.POST.get('menu_type')
 
             #Get menus and recipes
+            #If non-numeric "id", this is an ad-hoc recipe title to be added to DB
+            if is_int(recipe_id):
+                recipe = get_object_or_404(Recipe, pk=recipe_id, owner=request.user)
+            else:
+                log.debug("Recipe is not an id, creating new.")
+                recipe = Recipe(title=recipe_id, source='ad-hoc', owner=request.user, url='')
+                recipe.save()
+                log.debug('Added new recipe %s' % recipe_id)
+
             menu = get_object_or_404(WeeklyMenu, pk=menu_id, owner=request.user)
-            recipe = get_object_or_404(Recipe, pk=recipe_id, owner=request.user)
             dt = datetime.datetime.strptime(menu_date, "%Y%m%d").date()
             mi = MenuItem(menu=menu, menu_date=dt, menu_type=menu_type, recipe=recipe,
                     owner=request.user)
