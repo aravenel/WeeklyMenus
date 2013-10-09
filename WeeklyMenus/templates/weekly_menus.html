@@ -120,7 +120,8 @@
                                 'menu_type': menu_type,
                             },
                             success: function(data, ret_code, jqHXR){
-                                var recipe = '<div class="alert alert-info">'+ui.item.label
+                                var recipe_name = ui.item.label.replace('Add new recipe: ', '');
+                                var recipe = '<div class="alert alert-info">'+recipe_name
                                     + '<button type="button" class="close recipe_delete" '
                                     + 'data-dismiss="alert" recipe_id='+ data.menuitem_id
                                     + '>&times;</button></div>';
