@@ -9,7 +9,7 @@ except ImportError:
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': DB_NAME,
         'USER': DB_USER,                      # Not used with sqlite3.
         'PASSWORD': DB_PASSWORD,                  # Not used with sqlite3.

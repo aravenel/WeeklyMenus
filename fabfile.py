@@ -132,13 +132,15 @@ def push():
 
 
 def provision():
-    #install basic background
+    #install packages
     sudo('apt-get -qq update')
-    # sudo('apt-get -y -qq upgrade')
-    sudo('apt-get -y -qq install python python-pip nginx redis-server mysql-server python-mysqldb libmysqlclient-dev libxml2-dev libxslt1-dev python-dev supervisor vim libjpeg62 libjpeg62-dev zlib1g-dev')
+    #sudo('apt-get -y -qq upgrade')
+    sudo('apt-get -y -qq install python python-pip nginx redis-server postgresql postgresql-server-dev-all libxml2-dev libxslt1-dev python-dev supervisor vim libjpeg62 libjpeg62-dev zlib1g-dev')
     sudo('update-rc.d nginx defaults')
+
     #install python packages
     sudo('pip install virtualenv virtualenvwrapper')
+
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
     sudo('mkdir -p /srv/www/menus-dev/logs')
@@ -155,6 +157,7 @@ def provision():
     sudo('mkdir -p /srv/www/menus-dev/media/cache')
     sudo('chown %s /srv/www/menus-dev/media' % env.run_user)
     # run('mkdir -p ~/apps/menus-staging')
+
     #config files
     if env.environment == 'vagrant':
         put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
@@ -163,16 +166,19 @@ def provision():
         with settings(warn_only=True):
             sudo('service nginx restart')
             sudo('service supervisor restart')
+
     #setup virtualenv
     run('mkdir -p %s' % env.venv_dir)
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
     run('mkvirtualenv %s' % env.venv_name)
-    #setup mysql databases
+
+    #setup pgsql databases
     #may fail because already exists, etc--if so, will continue
-    with settings(warn_only=True):
-        run('mysqladmin -u root create %s' % (DB_NAME))
-        run('mysql -uroot -e "USE \'%s\'; GRANT ALL PRIVILEGES ON %s.* TO \'%s\'@\'localhost\' IDENTIFIED BY \'%s\';"' 
-                % (DB_NAME, DB_NAME, DB_USER, DB_PASSWORD))
+    #with settings(warn_only=True):
+    sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (DB_USER, DB_PASSWORD), user='postgres')
+    sudo('psql -c "CREATE DATABASE %s WITH OWNER %s"' % (
+    DB_NAME, DB_USER), user='postgres')
+
     #do ln last in case it fails on vagrant
     #may fail due to virtualbox weirdness, if so, will continue
     with settings(warn_only=True):
@@ -223,15 +229,16 @@ def deploy():
             sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
             print "Done."
 
-            #Restart redis
-            #sudo('service redis-server restart')
 
-            #Restart supervisord groups
-            print "Restarting supervisord programs..."
-            sudo('supervisorctl restart %s:' % env.supervisord_group)
-            print "Done."
+        #Restart supervisord groups
+        print "Restarting supervisord programs..."
+        sudo('supervisorctl restart %s:' % env.supervisord_group)
+        print "Done."
 
-            #Restart nginx server
-            #print "Restarting nginx..."
-            #sudo('service nginx restart')
-            #print "Done."
+        #Restart redis
+        #sudo('service redis-server restart')
+
+        #Restart nginx server
+        #print "Restarting nginx..."
+        #sudo('service nginx restart')
+        #print "Done."
