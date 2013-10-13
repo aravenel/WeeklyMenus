@@ -41,8 +41,12 @@ def update_feed_pinboard(feed_id):
     def new_recipes(feed):
         """Return True if there are new recipes on Pinboard"""
         last_update = get_last_update()
-        if last_update > feed.updated:
-            log.debug('New bookmarks on pinboard since last check')
+        if feed.updated: #Make sure this exists to avoid errors
+            if last_update > feed.updated:
+                log.debug('New bookmarks on pinboard since last check')
+                return True
+        else:
+            #If feed.updated is None, means it is a new feed--needs to be updated
             return True
         log.debug('No new bookmarks on pinboard since last check')
         return False

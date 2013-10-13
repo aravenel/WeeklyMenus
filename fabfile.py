@@ -156,6 +156,7 @@ def provision():
     sudo('mkdir -p /srv/www/menus-dev/media')
     sudo('mkdir -p /srv/www/menus-dev/media/cache')
     sudo('chown %s /srv/www/menus-dev/media' % env.run_user)
+    sudo('chmod -R 777 /srv/www/menus-dev/media')
     # run('mkdir -p ~/apps/menus-staging')
 
     #config files
@@ -174,16 +175,18 @@ def provision():
 
     #setup pgsql databases
     #may fail because already exists, etc--if so, will continue
-    #with settings(warn_only=True):
-    sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (DB_USER, DB_PASSWORD), user='postgres')
-    sudo('psql -c "CREATE DATABASE %s WITH OWNER %s"' % (
-    DB_NAME, DB_USER), user='postgres')
+    with settings(warn_only=True):
+        sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (DB_USER, DB_PASSWORD), user='postgres')
+        sudo('psql -c "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\' LC_CTYPE=\'en_US.utf8\' LC_COLLATE=\'en_US.utf8\' TEMPLATE=template0"' % (DB_NAME, DB_USER), user='postgres')
 
     #do ln last in case it fails on vagrant
     #may fail due to virtualbox weirdness, if so, will continue
     with settings(warn_only=True):
         if env.environment == 'vagrant':
             sudo('ln -s /vagrant /srv/www/menus-dev/http')
+
+    #Start supervisor
+    sudo('service supervisor start')
 
 
 def deploy():
@@ -210,16 +213,16 @@ def deploy():
             sudo('pip install -r requirements.txt')
 
             #Sync DB
-            #sudo('python manage.py syncdb --settings=settings.%s' % env.environment)
             print "Syncing DB..."
-            # run('%s manage.py syncdb --settings=settings.%s' % (env.python, env.environment))
             run('python manage.py syncdb --settings=settings.%s' % (env.environment))
             print "Done."
 
             #Run South migrations
-            #sudo('python manage.py migrate --all --settings=settings.%s' % env.environment)
             print "Running South migrations..."
-            # run('%s manage.py migrate --all --settings=settings.%s' % (env.python, env.environment))
+            #What. The. Fuck. Why do I have to run them indiv before --all?
+            run('python manage.py migrate recipemanager --settings=settings.%s' % (env.environment))
+            run('python manage.py migrate menumanager --settings=settings.%s' % (env.environment))
+            run('python manage.py migrate feedmanager --settings=settings.%s' % (env.environment))
             run('python manage.py migrate --all --settings=settings.%s' % (env.environment))
             print "Done."
 
