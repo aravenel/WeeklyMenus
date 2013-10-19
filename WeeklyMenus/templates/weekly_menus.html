@@ -25,6 +25,10 @@
 
         var csrftoken = getCookie('csrftoken');
 
+        var add_recipe = function(recipe_id) {
+
+        };
+
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -55,7 +59,7 @@
             } else {
                 $.get(url, function(data) {
                     $('<div class="modal hide fade">' + data + '</div>').modal({
-                        width: 900,
+                        width: 940,
                     });
                 });
             }

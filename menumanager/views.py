@@ -20,6 +20,10 @@ def is_int(value): #Return true if int
     except ValueError:
         return False
 
+def chunk_list(l, n=3):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
+
 log = logging.getLogger(__name__)
 
 # Create your views here.
@@ -92,6 +96,7 @@ def menu_edit(request, weeklymenu_id, menu_date, menu_type):
             'menu_items_modal.html',
             {
                 'current_recipes': current_recipes,
+                'chunked_recipes': chunk_list(current_recipes),
                 'recent_recipes': recent_recipes,
                 'popular_recipes': popular_recipes,
                 'info_data': info_data,

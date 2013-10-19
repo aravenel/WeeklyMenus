@@ -3,19 +3,29 @@
 </div>
 
 <div class="modal-body">
-<div class="row">
-    <div class="span12 menu_items">
-        {% if current_recipes|length > 0 %}
-            {% for menuitem in current_recipes %}
-                <div class="alert alert-info">{{menuitem.recipe.title}}
-                    <button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id={{menuitem.id}}>&times;</button>
+    <div id="recipes">
+        {% if chunked_recipes|length > 0 %}
+            {% for reciperow in chunked_recipes %}
+                <div class="row reciperow">
+                    <div class="container text-center">
+                        {% for menuitem in reciperow %}
+                        <div class="span3">
+                            <p>{{menuitem.recipe.title}}</p>
+                            <button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id={{menuitem.id}}>&times;</button>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
-            <p id="no_recipe_warning">No recipes added to menu!</p>
+        <div class="row">
+            <div class="span12">
+                <p id="no_recipe_warning">No recipes added to menu!</p>
+            </div>
+        </div>
         {% endif %}
     </div>
-</div>
+
 
 <div class="row" style="padding-top:10px;">
     <div id="hidden_inputs">
@@ -30,7 +40,7 @@
 </div>
 
 <div class="row" style="padding-top:20px;">
-    <div class="span6">
+    <div class="span5">
         <h2>Most Frequently Made</h2>
         <table class="table table-striped">
             <thead>
@@ -50,7 +60,7 @@
             </tbody>
         </table>
     </div>
-    <div class="span6">
+    <div class="span5">
         <h2>Most Recent</h2>
         <table class="table table-striped">
             <thead>
