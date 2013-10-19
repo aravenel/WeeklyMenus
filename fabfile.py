@@ -13,58 +13,9 @@ except ImportError:
 
 #
 #   TODO
-#
-#   -Remove config dict--put in environment sections
-#   -Separate out install steps into functions
 #   -Make passwords file dependent on environment (dev vs staging vs vagrant)
 #   -Make gunicorn conf dependent on environment
 #
-
-CONFIG = {
-    'dev': {
-        'repo': 'dev',
-    },
-    'staging': {
-        #Name of the branch to use
-        'repo': 'staging',
-        #Location where the code is stored
-        'code_dir': '/home/ravenel/apps/menus-staging/WeeklyMenus',
-        #Virtualenvwrapper directory
-        'venv_dir': '/home/vagrant/.venvs',
-        #Virtualenvwrapper venv name
-        'venv_name': 'menus-dev',
-        #Location of python executable--for virtualenv
-        'python': '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
-        #Group containing programs in supervisord.conf
-        'supervisord_group': 'menus-staging',
-        #Hosts to use
-        'hosts': [
-            #'http://menus-dev.alexravenel.com',
-            'www.alexravenel.com'
-        ],
-    },
-    'vagrant': {
-        #Name of the branch to use
-        'repo': 'develop',
-        #Location where the code is stored
-        'code_dir': '/vagrant',
-        #Virtualenvwrapper directory
-        'venv_dir': '/home/vagrant/.venvs',
-        #Virtualenvwrapper venv name
-        'venv_name': 'menus-dev',
-        #Location of python executable--for virtualenv
-        'python': '~/apps/menus-staging/WeeklyMenus/venv/bin/python',
-        #Group containing programs in supervisord.conf
-        'supervisord_group': 'menus-staging',
-        #Hosts to use
-        'hosts': [
-            #'http://menus-dev.alexravenel.com',
-            'www.alexravenel.com'
-        ],
-    },
-    'prod': {
-    },
-}
 
 key_locations = {
     'usnycaravenel1': r'C:\Users\aravenel\pri-openssh.ppk',
@@ -72,16 +23,23 @@ key_locations = {
 }
 
 
+
+##################################################
+#
+#   ENVIRONMENT CONFIG
+#
+##################################################
+
 def staging():
     env.environment = 'staging'
-    env.hosts = CONFIG[env.environment]['hosts']
-    env.code_dir = CONFIG[env.environment]['code_dir']
-    env.repo = CONFIG[env.environment]['repo']
-    env.venv_dir = CONFIG[env.environment]['venv_dir']
-    env.venv_name = CONFIG[env.environment]['venv_name']
+    env.hosts = ['www.alexravenel.com']
+    env.code_dir = '/home/ravenel/apps/menus-staging/WeeklyMenus'
+    env.repo = 'staging'
+    env.venv_dir = '/home/vagrant/.venvs'
+    env.venv_name = 'menus-dev'
     env.merges_from = 'develop'
-    env.python = CONFIG[env.environment]['python']
-    env.supervisord_group = CONFIG[env.environment]['supervisord_group']
+    env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
+    env.supervisord_group = 'menus-staging'
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
 
@@ -89,15 +47,15 @@ def staging():
 def vagrant():
     env.environment = 'vagrant'
     env.hosts = ['127.0.0.1:2222']
-    env.code_dir = CONFIG[env.environment]['code_dir']
-    env.repo = CONFIG[env.environment]['repo']
-    env.venv_dir = CONFIG[env.environment]['venv_dir']
-    env.venv_name = CONFIG[env.environment]['venv_name']
+    env.code_dir = '/vagrant'
+    env.repo = 'develop'
+    env.venv_dir = '/home/vagrant/.venvs'
+    env.venv_name = 'menus-dev'
     env.user = 'vagrant'
     env.run_user = 'www-data'
     env.merges_from = 'develop'
-    env.python = CONFIG[env.environment]['python']
-    env.supervisord_group = CONFIG[env.environment]['supervisord_group']
+    env.python = '~/apps/menus-staging/WeeklyMenus/venv/bin/python',
+    env.supervisord_group = 'menus-staging'
     ssh_keyfile = local('vagrant ssh-config | grep IdentityFile', capture=True)
     if os.name == 'nt':
         env.key_filename = ssh_keyfile.split()[1].replace(r'/', '\\').replace('\"', '')
@@ -110,77 +68,162 @@ def prod():
     print "If you wish to continue, enter Yes:"
     ans = raw_input()
     if ans.upper in ['YES']:
-        env.hosts = CONFIG['prod']['hosts']
-        env.code_dir = CONFIG['prod']['code_dir']
-        env.repo = CONFIG['prod']['repo']
+        env.hosts = ''
+        env.code_dir = ''
+        env.repo = ''
         env.environment = 'prod'
-        env.python = CONFIG['prod']['python']
-        env.supervisord_group = CONFIG['prod']['supervisord_group']
+        env.python = ''
+        env.supervisord_group = ''
         env.user = 'ravenel'
         env.key_filename = key_locations[gethostname()]
     else:
         exit()
 
 
+
+
+##################################################
+#
+#   HELPER FUNCTIONS
+#
+##################################################
+
 def merge():
     local('git checkout %s' % env.repo)
     local('git merge %s' % env.merges_from)
 
-
 def push():
     local('git push origin %s' % env.repo)
 
-
-def provision():
+def install_prereqs(upgrade=False):
+    """Install system packages and python prereqs"""
     #install packages
     sudo('apt-get -qq update')
-    #sudo('apt-get -y -qq upgrade')
+    if upgrade:
+        sudo('apt-get -y -qq upgrade')
     sudo('apt-get -y -qq install python python-pip nginx redis-server postgresql postgresql-server-dev-all libxml2-dev libxslt1-dev python-dev supervisor vim libjpeg62 libjpeg62-dev zlib1g-dev')
     sudo('update-rc.d nginx defaults')
 
     #install python packages
     sudo('pip install virtualenv virtualenvwrapper')
 
+def setup_folders(run_user):
+    """Setup and permission folders"""
     #make directories
     sudo('mkdir -p /srv/www/menus-dev')
     sudo('mkdir -p /srv/www/menus-dev/logs')
-    sudo('chown %s /srv/www/menus-dev/logs' % env.run_user)
+    sudo('chown %s /srv/www/menus-dev/logs' % run_user)
     #FIX THIS FOR REAL
     sudo('chmod -R 777 /srv/www/menus-dev/logs')
 
     sudo('mkdir -p /srv/www/menus-dev/http/logs')
-    sudo('chown %s /srv/www/menus-dev/http/logs' % env.run_user)
+    sudo('chown %s /srv/www/menus-dev/http/logs' % run_user)
     #FIX THIS FOR REAL
     sudo('chmod -R 777 /srv/www/menus-dev/http/logs')
 
     sudo('mkdir -p /srv/www/menus-dev/media')
     sudo('mkdir -p /srv/www/menus-dev/media/cache')
-    sudo('chown %s /srv/www/menus-dev/media' % env.run_user)
+    sudo('chown %s /srv/www/menus-dev/media' % run_user)
     sudo('chmod -R 777 /srv/www/menus-dev/media')
     # run('mkdir -p ~/apps/menus-staging')
 
+def push_config_files(environment):
+    """Push config files (nginx, supervisord) to host"""
     #config files
-    if env.environment == 'vagrant':
-        put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/nginx.conf', use_sudo=True)
-        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/supervisord.conf', use_sudo=True)
+    if environment == 'vagrant':
+        put('settings/config/nginx-%s.conf' % environment, '/etc/nginx/nginx.conf', use_sudo=True)
+        put('settings/config/supervisord-%s.conf' % environment, '/etc/supervisor/supervisord.conf', use_sudo=True)
         #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
         with settings(warn_only=True):
             sudo('service nginx restart')
             sudo('service supervisor restart')
 
-    #setup virtualenv
-    run('mkdir -p %s' % env.venv_dir)
+def setup_virtualenv(venv_dir, venv_name):
+    """Setup virtual environments on the host"""
+    run('mkdir -p %s' % venv_dir)
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
-    run('mkvirtualenv %s' % env.venv_name)
+    run('mkvirtualenv %s' % venv_name)
 
-    #setup pgsql databases
+def create_database(user, password, name):
+    """Create database and user"""
     #may fail because already exists, etc--if so, will continue
     with settings(warn_only=True):
-        sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (DB_USER, DB_PASSWORD), user='postgres')
-        sudo('psql -c "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\' LC_CTYPE=\'en_US.utf8\' LC_COLLATE=\'en_US.utf8\' TEMPLATE=template0"' % (DB_NAME, DB_USER), user='postgres')
+        sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (user, password), user='postgres')
+        sudo('psql -c "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\' LC_CTYPE=\'en_US.utf8\' LC_COLLATE=\'en_US.utf8\' TEMPLATE=template0"' % (name, user), user='postgres')
+
+def update_code(code_dir, repo):
+    """Get new code on the host"""
+    with cd(code_dir):
+        #sudo('git pull')
+        #sudo('git checkout %s' % env.repo)
+        print "Checking out code...",
+        run('git reset --hard HEAD')
+        run('git checkout %s' % repo)
+        run('git pull')
+
+def push_passwords(code_dir, environment):
+    """Push password files to host"""
+    with cd(code_dir):
+        settings_file = os.path.join('settings', 'passwords_%s.py' % environment)
+        if os.path.isfile(settings_file):
+            put(settings_file, 'settings')
+        else:
+            print "Settings file %s does not exist. Cannot copy to host." % settings_file
+        print "Done."
+
+def prepare_django(code_dir, venv_name, environment):
+    """Do django stuff--install python packages, sync db, run migrations, collect static"""
+    with cd(code_dir):
+        with prefix('workon %s' % venv_name):
+            #Make sure all packages are up to date
+            sudo('pip install -r requirements.txt')
+
+            #Sync DB
+            print "Syncing DB..."
+            run('python manage.py syncdb --settings=settings.%s' % (environment))
+            print "Done."
+
+            #Run South migrations
+            print "Running South migrations..."
+            #What. The. Fuck. Why do I have to run them indiv before --all?
+            run('python manage.py migrate recipemanager --settings=settings.%s' % (environment))
+            run('python manage.py migrate menumanager --settings=settings.%s' % (environment))
+            run('python manage.py migrate feedmanager --settings=settings.%s' % (environment))
+            run('python manage.py migrate --all --settings=settings.%s' % (environment))
+            print "Done."
+
+            #Collect static
+            print "Collecting static files..."
+            sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (environment))
+            print "Done."
+
+
+
+##################################################
+#
+#   MAIN FUNCTIONS
+#
+##################################################
+
+def provision():
+    """Setup a new host from scratch--install prereqs, database, etc"""
+
+    #Setup the base software on the system
+    install_prereqs()
+
+    #Setup folders
+    setup_folders(env.run_user)
+
+    #Push over the config files
+    push_config_files(env.environment)
+
+    #setup virtualenv
+    setup_virtualenv(env.venv_dir, env.venv_name)
+
+    #setup pgsql databases
+    create_database(DB_USER, DB_PASSWORD, DB_NAME)
 
     #do ln last in case it fails on vagrant
-    #may fail due to virtualbox weirdness, if so, will continue
     with settings(warn_only=True):
         if env.environment == 'vagrant':
             sudo('ln -s /vagrant /srv/www/menus-dev/http')
@@ -190,58 +233,26 @@ def provision():
 
 
 def deploy():
-    with cd(env.code_dir):
-        if env.environment != 'vagrant':
-            #Checkout new code
-            #sudo('git pull')
-            #sudo('git checkout %s' % env.repo)
-            print "Checking out code...",
-            run('git reset --hard HEAD')
-            run('git checkout %s' % env.repo)
-            run('git pull')
+    """Deploy code to host"""
 
-            #Push passwords file to host
-            settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
-            if os.path.isfile(settings_file):
-                put(settings_file, 'settings')
-            else:
-                print "Settings file %s does not exist. Cannot copy to host." % settings_file
-            print "Done."
+    if env.environment != 'vagrant':
+        #Checkout new code
+        update_code(env.code_dir, env.repo)
 
-        with prefix('workon %s' % env.venv_name):
-            #Make sure all packages are up to date
-            sudo('pip install -r requirements.txt')
+        #Push passwords file to host
+        push_passwords(code_dir, env.environment)
 
-            #Sync DB
-            print "Syncing DB..."
-            run('python manage.py syncdb --settings=settings.%s' % (env.environment))
-            print "Done."
+    prepare_django(env.code_dir, env.venv_name, env.environment)
 
-            #Run South migrations
-            print "Running South migrations..."
-            #What. The. Fuck. Why do I have to run them indiv before --all?
-            run('python manage.py migrate recipemanager --settings=settings.%s' % (env.environment))
-            run('python manage.py migrate menumanager --settings=settings.%s' % (env.environment))
-            run('python manage.py migrate feedmanager --settings=settings.%s' % (env.environment))
-            run('python manage.py migrate --all --settings=settings.%s' % (env.environment))
-            print "Done."
+    #Restart supervisord groups
+    print "Restarting supervisord programs..."
+    sudo('supervisorctl restart %s:' % env.supervisord_group)
+    print "Done."
 
-            #Collect static
-            print "Collecting static files..."
-            # run('%s manage.py collectstatic --noinput --settings=settings.%s' % (env.python, env.environment))
-            sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
-            print "Done."
+    #Restart redis
+    #sudo('service redis-server restart')
 
-
-        #Restart supervisord groups
-        print "Restarting supervisord programs..."
-        sudo('supervisorctl restart %s:' % env.supervisord_group)
-        print "Done."
-
-        #Restart redis
-        #sudo('service redis-server restart')
-
-        #Restart nginx server
-        #print "Restarting nginx..."
-        #sudo('service nginx restart')
-        #print "Done."
+    #Restart nginx server
+    #print "Restarting nginx..."
+    #sudo('service nginx restart')
+    #print "Done."

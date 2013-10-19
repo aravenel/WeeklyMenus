@@ -1,9 +1,9 @@
 Django>=1.4.1
 South
-amqplib
+#amqplib
 anyjson
 argparse==1.2.1
-billiard
+#billiard
 celery
 django-ajax-selects==1.2.5
 django-celery
@@ -12,7 +12,7 @@ django-crispy-forms==1.1.4
 django-debug-toolbar
 django-taggit
 django-taggit-autosuggest
-kombu
+#kombu
 python-dateutil==1.5
 redis
 requests
@@ -25,4 +25,4 @@ pillow
 sorl-thumbnail
 pytz>=2013b
 psycopg2
-django-extensions
+#django-extensions
