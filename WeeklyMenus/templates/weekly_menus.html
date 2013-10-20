@@ -25,10 +25,6 @@
 
         var csrftoken = getCookie('csrftoken');
 
-        var add_recipe = function(recipe_id) {
-
-        };
-
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -41,6 +37,40 @@
                 }
             }
         });
+
+
+        //Functions to add new recipes to modal
+        function get_recipe_data(recipe_id, callback){
+            $.ajax({
+                url:'/recipes/get_recipe_data',
+                dataType:'json',
+                type:'GET',
+                data: {'recipe_id': recipe_id},
+                success: function(data, ret_code, jqHXR){
+                    callback(data);
+                },
+                error: function(jqHXR, textStatus, errorThrown){
+                    var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
+                    $('.ajax_errors').append(msg);
+                    return null;
+                },
+            });
+        };
+        function add_recipe(data) {
+            get_recipe_data(data.menuitem_id, function(recipe_data) {
+                var recipe_html = '<div class="span3">' +
+                    '<img src="' + recipe_data.thumbnail + '" width="270" height="270" float="top"\\>'+
+                    '<p>' + recipe_data.title + '</p>'+
+                    '<button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id='+
+                    recipe_data.id + '>&times;</button>';
+                if ($('.reciperow:last .span3').length >= 3){
+                    console.log('Already three recipes in last row--adding new.');
+                    var newrow = '<div class="row reciperow"><div class="container text-center"></div></div>';
+                    $('#recipes').append(newrow);
+                }
+                $('.reciperow:last .container').append(recipe_html);
+            });
+        };
 
 
         //Datepicker code
@@ -129,7 +159,9 @@
                                     + '<button type="button" class="close recipe_delete" '
                                     + 'data-dismiss="alert" recipe_id='+ data.menuitem_id
                                     + '>&times;</button></div>';
-                                $('.menu_items').append(recipe);
+                                <!--$('.menu_items').append(recipe);-->
+                                console.log('Calling add_recipe');
+                                add_recipe(data);
                                 $('#no_recipe_warning').remove();
                                 $('.autocomplete').val(null);
                             },

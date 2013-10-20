@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
+from sorl.thumbnail import get_thumbnail
 import logging
 import json
 # Create your views here.
@@ -281,6 +282,22 @@ def ajax_search(request):
         term = request.GET.get('term')
         recipes = Recipe.objects.filter(owner=request.user, title__icontains=term)
         response_data = [{'label': recipe.title, 'value': recipe.id} for recipe in recipes]
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    else:
+        return HttpResponseBadRequest("Bad request, must be AJAX")
+
+@login_required
+def get_recipe_data(request):
+    if request.is_ajax():
+        recipe_id = request.GET.get('recipe_id')
+        recipe = get_object_or_404(Recipe, id=recipe_id, owner=request.user)
+        thumbnail = get_thumbnail(recipe.image, '270x270', crop='center')
+        response_data = {
+            'id': recipe.id,
+            'title': recipe.title,
+            'image': recipe.image,
+            'thumbnail': thumbnail.url,
+        }
         return HttpResponse(json.dumps(response_data), content_type='application/json')
     else:
         return HttpResponseBadRequest("Bad request, must be AJAX")
