@@ -40,12 +40,13 @@
 
 
         //Functions to add new recipes to modal
-        function get_recipe_data(recipe_id, callback){
+        function get_recipe_data(menuitem_id, callback){
+            console.log("Getting recipe data for menu item " + menuitem_id);
             $.ajax({
                 url:'/recipes/get_recipe_data',
                 dataType:'json',
                 type:'GET',
-                data: {'recipe_id': recipe_id},
+                data: {'menuitem_id': menuitem_id},
                 success: function(data, ret_code, jqHXR){
                     callback(data);
                 },
@@ -58,17 +59,18 @@
         };
         function add_recipe(data) {
             get_recipe_data(data.menuitem_id, function(recipe_data) {
-                var recipe_html = '<div class="span3">' +
-                    '<img src="' + recipe_data.thumbnail + '" width="270" height="270" float="top"\\>'+
-                    '<p>' + recipe_data.title + '</p>'+
+                var recipe_html = '<li class="span4"><div class="thumbnail">' +
+                    '<img src="' + recipe_data.thumbnail + '" width="300" height="200" float="top"\\>'+
+                    '<div class="caption"><p>' + recipe_data.title + '</p>'+
                     '<button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id='+
-                    recipe_data.id + '>&times;</button>';
-                if ($('.reciperow:last .span3').length >= 3){
+                    recipe_data.id + '>&times;</button></div></div></li>';
+                console.log(recipe_html);
+                if ($('.reciperow:last ul .span4').length >= 3){
                     console.log('Already three recipes in last row--adding new.');
-                    var newrow = '<div class="row reciperow"><div class="container text-center"></div></div>';
+                    var newrow = '<div class="row-fluid reciperow"><ul class="thumbnails"></ul></div>';
                     $('#recipes').append(newrow);
                 }
-                $('.reciperow:last .container').append(recipe_html);
+                $('.reciperow:last .thumbnails').append(recipe_html);
             });
         };
 
@@ -99,13 +101,14 @@
         $(document).on("click", ".recipe_delete", function(event){
             event.preventDefault();
             recipe_id = $(this).attr('recipe_id');
+            li_item = $(this).closest('li .span4');
             $.ajax({
                 url:'/menus/ajax_delete/',
                 dataType: 'json',
                 type: 'POST',
                 data: {'menuitem_id': recipe_id},
                 success: function(data, ret_code, jqHXR){
-                    $(this).remove();
+                    li_item.remove();
                 },
                 error: function(jqHXR, textStatus, errorThrown){
                     var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
@@ -154,13 +157,6 @@
                                 'menu_type': menu_type,
                             },
                             success: function(data, ret_code, jqHXR){
-                                var recipe_name = ui.item.label.replace('Add new recipe: ', '');
-                                var recipe = '<div class="alert alert-info">'+recipe_name
-                                    + '<button type="button" class="close recipe_delete" '
-                                    + 'data-dismiss="alert" recipe_id='+ data.menuitem_id
-                                    + '>&times;</button></div>';
-                                <!--$('.menu_items').append(recipe);-->
-                                console.log('Calling add_recipe');
                                 add_recipe(data);
                                 $('#no_recipe_warning').remove();
                                 $('.autocomplete').val(null);

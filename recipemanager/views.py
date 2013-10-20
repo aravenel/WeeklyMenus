@@ -1,4 +1,5 @@
 from recipemanager.models import Recipe, RecipeForm, RecipeSearchForm
+from menumanager.models import MenuItem
 from taggit.models import Tag
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -289,9 +290,12 @@ def ajax_search(request):
 @login_required
 def get_recipe_data(request):
     if request.is_ajax():
-        recipe_id = request.GET.get('recipe_id')
-        recipe = get_object_or_404(Recipe, id=recipe_id, owner=request.user)
-        thumbnail = get_thumbnail(recipe.image, '270x270', crop='center')
+        menuitem_id = request.GET.get('menuitem_id')
+        log.debug('Getting recipe data for menuitem %s' % menuitem_id)
+        menuitem = get_object_or_404(MenuItem, id=menuitem_id, owner=request.user)
+        recipe = menuitem.recipe
+        log.debug("Got recipe %s to show in menu" % recipe.title)
+        thumbnail = get_thumbnail(recipe.image, '300x200', crop='center')
         response_data = {
             'id': recipe.id,
             'title': recipe.title,

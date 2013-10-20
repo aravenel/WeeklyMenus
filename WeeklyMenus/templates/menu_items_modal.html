@@ -7,19 +7,23 @@
         {% if chunked_recipes|length > 0 %}
             {% load thumbnail %}
             {% for reciperow in chunked_recipes %}
-                <div class="row reciperow">
-                    <div class="container text-center">
+                <div class="row-fluid reciperow">
+                    <ul class="thumbnails">
                         {% for menuitem in reciperow %}
-                        <div class="span3">
-                            {% thumbnail menuitem.recipe.image "270x270" crop="center" as im %}
-                            <img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}" float="top\">
-                            {% empty %}
-                            {% endthumbnail %}
-                            <p>{{menuitem.recipe.title}}</p>
-                            <button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id={{menuitem.id}}>&times;</button>
-                        </div>
+                            <li class="span4">
+                                <div class="thumbnail">
+                                    {% thumbnail menuitem.recipe.image "300x200" crop="center" as im %}
+                                    <img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}" float="top\">
+                                    {% empty %}
+                                    {% endthumbnail %}
+                                    <div class="caption">
+                                    <p>{{menuitem.recipe.title}}</p>
+                                    <button type="button" class="close recipe_delete" data-dismiss="alert" recipe_id={{menuitem.id}}>&times;</button>
+                                    </div>
+                                </div>
+                            </li>
                         {% endfor %}
-                    </div>
+                    </ul>
                 </div>
             {% endfor %}
         {% else %}
