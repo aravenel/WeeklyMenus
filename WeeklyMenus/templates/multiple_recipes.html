@@ -59,7 +59,7 @@
     {% thumbnail recipe.image "50x50" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" float="left"\>
     {% empty %}
-    <p align='center'><i class='icon-question-sign'></i></p>
+    <img src="{{STATIC_URL}}/images/recipe-icon.svg" height="50" width="50" float="left"\>
     {% endthumbnail %}
     </div>
     <div class='span7'>

@@ -62,8 +62,8 @@
                 var recipe_html = '<li class="span4"><div class="thumbnail">' +
                     '<img src="' + recipe_data.thumbnail + '" width="300" height="200" float="top"\\>'+
                     '<div class="caption"><p>' + recipe_data.title + '</p>'+
-                    '<a class="btn btn-danger recipe_delete" data-dismiss="alert" recipe_id='+
-                    recipe_data.id + '>Delete from menu</a></div></div></li>';
+                    '<a class="btn btn-danger recipe_delete" data-dismiss="alert" recipe_id="'+
+                    recipe_data.id + '">Delete from menu</a></div></div></li>';
                 console.log(recipe_html);
                 if ($('.reciperow:last ul .span4').length >= 3){
                     console.log('Already three recipes in last row--adding new.');

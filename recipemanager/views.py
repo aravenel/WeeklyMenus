@@ -4,6 +4,7 @@ from taggit.models import Tag
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.templatetags.static import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -291,16 +292,18 @@ def ajax_search(request):
 def get_recipe_data(request):
     if request.is_ajax():
         menuitem_id = request.GET.get('menuitem_id')
-        log.debug('Getting recipe data for menuitem %s' % menuitem_id)
         menuitem = get_object_or_404(MenuItem, id=menuitem_id, owner=request.user)
         recipe = menuitem.recipe
-        log.debug("Got recipe %s to show in menu" % recipe.title)
-        thumbnail = get_thumbnail(recipe.image, '300x200', crop='center')
+        if recipe.image == '' or not recipe.image:
+            #thumbnail = static('/images/recipe-icon.svg')
+            thumbnail = settings.STATIC_URL + '/images/recipe-icon.svg'
+        else:
+            thumbnail = get_thumbnail(recipe.image, '300x200', crop='center').url
         response_data = {
             'id': recipe.id,
             'title': recipe.title,
             'image': recipe.image,
-            'thumbnail': thumbnail.url,
+            'thumbnail': thumbnail,
         }
         return HttpResponse(json.dumps(response_data), content_type='application/json')
     else:

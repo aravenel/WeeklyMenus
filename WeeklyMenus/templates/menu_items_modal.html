@@ -15,6 +15,7 @@
                                     {% thumbnail menuitem.recipe.image "300x200" crop="center" as im %}
                                     <img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}" float="top\">
                                     {% empty %}
+                                    <img src="{{STATIC_URL}}/images/recipe-icon.svg" width="300" height="200" \>
                                     {% endthumbnail %}
                                     <div class="caption">
                                     <p>{{menuitem.recipe.title}}</p>
