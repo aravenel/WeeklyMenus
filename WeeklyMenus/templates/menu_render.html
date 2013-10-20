@@ -1,27 +1,24 @@
-<table class='table table-striped'>
-    <thead>
-        <th></th>
-        <th>Breakfast</th>
-        <th>Lunch</th>
-        <th>Dinner</th>
-    </thead>
-    <tbody>
-        {% for md in menu_dict|dictsort:"date" %}
-        <tr>
-            <td>{{ md.date|date:"D, M d Y" }}</td>
-            {% for meal in md.items %}
-              {% if meal == None %}
-              <td><p><a class="btn btn-mini btn-primary" data-toggle='modal' href="http://{{host}}/menus/edit/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a></p></td>
-              {% else %}
-              <td><p>
-                  {% for item in meal %}
-                  {{ item.recipe.title }}<br />
-                  {% endfor %}
-                  <a class="btn btn-mini btn-primary" data-toggle="modal" href="http://{{host}}/menus/edit/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
-              </p></td>
-              {% endif %}
-            {% endfor %}
-        </tr>
+{% for md in menu_dict|dictsort:"date" %}
+
+    <div class="row">
+        <div class="span12 text-left" style='border-bottom:1px;'>
+            <h3>{{ md.date|date:"D, M d Y" }}</h3>
+        </div>
+    </div>
+    <div class="row">
+        {% for meal in md.items %}
+            <div class="span4">
+                <h4>{{meal.meal_type}}</h4>
+                {% if meal.items == None %}
+                    <p><a class="btn btn-mini btn-primary" data-toggle='modal' href="http://{{host}}/menus/edit/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a></p>
+                {% else %}
+                    {% for item in meal.items %}
+                        {{ item.recipe.title }}<br />
+                    {% endfor %}
+                    <a class="btn btn-mini btn-primary" data-toggle="modal" href="http://{{host}}/menus/edit/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
+                {% endif %}
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    </div>
+
+{% endfor %}

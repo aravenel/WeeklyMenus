@@ -42,11 +42,14 @@ class WeeklyMenu(models.Model):
             md['items'] = []
             for meal in range(0, 3):
                 #items = menus.filter(menu_date = date, menu_type = meal)
+                item_dict = {}
+                item_dict['meal_type'] = type_mapping[meal]
                 items = [menu for menu in menus if menu.menu_date == date
                         and menu.menu_type == meal]
                 if len(items) == 0:
                     items = None
-                md['items'].append(items)
+                item_dict['items'] = items
+                md['items'].append(item_dict)
             menu_dict.append(md)
 
         return menu_dict
