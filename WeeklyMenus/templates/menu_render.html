@@ -1,22 +1,30 @@
 {% for md in menu_dict|dictsort:"date" %}
 
     <div class="row">
-        <div class="span12 text-left" style='border-bottom:1px;'>
+        <div class="span12 text-left" style='border-bottom:1px;padding-bottom:5px;padding-top:10px;'>
             <h3>{{ md.date|date:"D, M d Y" }}</h3>
         </div>
     </div>
     <div class="row">
         {% for meal in md.items %}
-            <div class="span4">
+        <div class="span4" id="{{current_menu.id}}_{{md.date|date:"Ymd"}}_{{forloop.counter0}}">
                 <h4>{{meal.meal_type}}</h4>
-                {% if meal.items == None %}
-                    <p><a class="btn btn-mini btn-primary" data-toggle='modal' href="http://{{host}}/menus/edit/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a></p>
-                {% else %}
+                {% if meal.items != None %}
                     {% for item in meal.items %}
                         {{ item.recipe.title }}<br />
                     {% endfor %}
-                    <a class="btn btn-mini btn-primary" data-toggle="modal" href="http://{{host}}/menus/edit/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
                 {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        {% for meal in md.items %}
+            <div class="span4">
+            {% if meal.items == None %}
+                <a class="btn btn-mini btn-primary" data-toggle='modal' href="http://{{host}}/menus/edit/{{ current_menu.id }}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Add Recipes</a>
+            {% else %}
+                <a class="btn btn-mini btn-primary" data-toggle="modal" href="http://{{host}}/menus/edit/{{current_menu.id}}/{{md.date|date:"Ymd"}}/{{forloop.counter0}}">Edit Menu</a>
+            {% endif %}
             </div>
         {% endfor %}
     </div>
