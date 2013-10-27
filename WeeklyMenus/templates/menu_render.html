@@ -1,3 +1,4 @@
+{% load thumbnail %}
 {% for md in menu_dict|dictsort:"date" %}
 
     <div class="row">
@@ -11,7 +12,20 @@
                 <h4>{{meal.meal_type}}</h4>
                 {% if meal.items != None %}
                     {% for item in meal.items %}
-                        {{ item.recipe.title }}<br />
+                    <div class="row" style="margin-top:5px;">
+                        <div class="media">
+                            <div class="pull-left" href="#">
+                                {% thumbnail item.recipe.image "50x50" crop="center" as im %}
+                                    <img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}" \>
+                                {% empty %}
+                                    <img src="{{STATIC_URL}}/images/recipe-icon.svg" width="64" height="64" \>
+                                {% endthumbnail %}
+                            </div>
+                            <div class="media-body">
+                                {{ item.recipe.title }}
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
                 {% endif %}
             </div>

@@ -40,15 +40,16 @@
 
 
         //Functions to add new recipes to modal
-        function get_recipe_data(menuitem_id, callback){
-            console.log("Getting recipe data for menu item " + menuitem_id);
+        function get_recipe_data(input_data, callback){
+            console.log("Getting recipe data for menu item " + input_data.menuitem_id);
             $.ajax({
                 url:'/recipes/get_recipe_data',
                 dataType:'json',
                 type:'GET',
-                data: {'menuitem_id': menuitem_id},
+                data: {'menuitem_id': input_data.menuitem_id},
                 success: function(data, ret_code, jqHXR){
-                    callback(data);
+                    var base_id = "#" + input_data.menu_id + "_" + input_data.menu_date + "_" + input_data.menu_type;
+                    callback(base_id, data);
                 },
                 error: function(jqHXR, textStatus, errorThrown){
                     var msg = '<div class="alert alert-error">'+ errorThrown + '</div>';
@@ -58,19 +59,28 @@
             });
         };
         function add_recipe(data) {
-            get_recipe_data(data.menuitem_id, function(recipe_data) {
-                var recipe_html = '<li class="span4"><div class="thumbnail">' +
-                    '<img src="' + recipe_data.thumbnail + '" width="300" height="200" float="top"\\>'+
+            get_recipe_data(data, function(base_id, recipe_data) {
+
+                //Update the modal
+                var recipe_html_modal = '<li class="span4"><div class="thumbnail">' +
+                    '<img src="' + recipe_data.thumbnail_large + '" width="300" height="200" float="top"\\>'+
                     '<div class="caption"><p>' + recipe_data.title + '</p>'+
                     '<a class="btn btn-danger recipe_delete" data-dismiss="alert" recipe_id="'+
                     recipe_data.id + '">Delete from menu</a></div></div></li>';
-                console.log(recipe_html);
                 if ($('.reciperow:last ul .span4').length >= 3){
                     console.log('Already three recipes in last row--adding new.');
                     var newrow = '<div class="row-fluid reciperow"><ul class="thumbnails"></ul></div>';
                     $('#recipes').append(newrow);
                 }
-                $('.reciperow:last .thumbnails').append(recipe_html);
+                $('.reciperow:last .thumbnails').append(recipe_html_modal);
+
+                //Update the base page
+                var recipe_html_base = '<div class="row" style="margin-top:5px;">' +
+                    '<div class="media"><div class="pull-left">'+
+                    '<img src="'+recipe_data.thumbnail_small+'" width="50" height="50" \\>'+
+                    '</div><div class="media-body">'+recipe_data.title+'</div></div></div>';
+                $(base_id).append(recipe_html_base);
+
             });
         };
 

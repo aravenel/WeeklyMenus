@@ -190,7 +190,12 @@ def ajax_add_to_menu(request):
             recipe.made_count += 1
             recipe.save()
 
-            response_data = {'menuitem_id': mi.id}
+            response_data = {
+                'menuitem_id': mi.id,
+                'menu_id': menu_id,
+                'menu_date': menu_date,
+                'menu_type': menu_type,
+            }
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
