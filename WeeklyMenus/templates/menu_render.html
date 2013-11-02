@@ -2,18 +2,18 @@
 {% for md in menu_dict|dictsort:"date" %}
 
     <div class="row">
-        <div class="span12 text-left" style='border-bottom:1px;padding-bottom:5px;padding-top:10px;'>
+        <div class="span12 text-left meal-date" style='border-bottom:1px;padding-bottom:5px;padding-top:10px;'>
             <h3>{{ md.date|date:"D, M d Y" }}</h3>
         </div>
     </div>
     <div class="row">
         {% for meal in md.items %}
-        <div class="span4" id="{{current_menu.id}}_{{md.date|date:"Ymd"}}_{{forloop.counter0}}">
+        <div class="span4 meal" id="{{current_menu.id}}_{{md.date|date:"Ymd"}}_{{forloop.counter0}}">
                 <h4>{{meal.meal_type}}</h4>
                 {% if meal.items != None %}
                     {% for item in meal.items %}
                     <div style="width:100%; margin-top:5px;">
-                        <div class="media">
+                        <div class="media clearfix">
                             <div class="pull-left" href="#">
                                 {% thumbnail item.recipe.image "50x50" crop="center" as im %}
                                     <img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}" \>
