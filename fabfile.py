@@ -68,12 +68,15 @@ def prod():
     print "If you wish to continue, enter Yes:"
     ans = raw_input()
     if ans.upper in ['YES']:
-        env.hosts = ''
-        env.code_dir = ''
-        env.repo = ''
-        env.environment = 'prod'
-        env.python = ''
-        env.supervisord_group = ''
+        env.environment = 'staging'
+        env.hosts = ['www.alexravenel.com']
+        env.code_dir = '/home/ravenel/apps/menus-staging/WeeklyMenus'
+        env.repo = 'staging'
+        env.venv_dir = '/home/vagrant/.venvs'
+        env.venv_name = 'menus-dev'
+        env.merges_from = 'develop'
+        env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
+        env.supervisord_group = 'menus-staging'
         env.user = 'ravenel'
         env.key_filename = key_locations[gethostname()]
     else:
