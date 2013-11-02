@@ -38,60 +38,66 @@
     </div>
 
 
-<div class="row" style="padding-top:10px;">
-    <div id="hidden_inputs">
-        <input type="hidden" id="menu_id" value="{{menu_id}}" />
-        <input type="hidden" id="menu_date" value="{{menu_date}}" />
-        <input type="hidden" id="menu_type" value="{{menu_type}}" />
+    <div class="row" style="padding-top:10px;">
+        <div id="hidden_inputs">
+            <input type="hidden" id="menu_id" value="{{menu_id}}" />
+            <input type="hidden" id="menu_date" value="{{menu_date}}" />
+            <input type="hidden" id="menu_type" value="{{menu_type}}" />
+        </div>
+        <div class="ajax_errors"></div>
+        <div class="span12 ui-front">
+            <h3>Search for recipes</h>
+            <div class="input-append">
+                <input type="text" class="span8 autocomplete" placeholder="Search for recipes" />
+                <button class="btn" type="button">Add to menu</button>
+            </div>
+        </div>
     </div>
-    <div class="ajax_errors"></div>
-    <div class="span12 ui-front">
-        <input type="text" class="input-xxlarge autocomplete" placeholder="Search for recipes" />
-    </div>
+
+    <!--<div class="row" style="padding-top:20px;">-->
+        <!--<div class="span5">-->
+            <!--<h2>Most Frequently Made</h2>-->
+            <!--<table class="table table-striped">-->
+                <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>Recipe</th>-->
+                        <!--<th>Times Made</th>-->
+                    <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--{% for recipe in popular_recipes %}-->
+                    <!--<tr>-->
+                        <!--<td>{{recipe.title}}</td>-->
+                        <!--<td>{{recipe.made_count}}</td>-->
+                        <!--<td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>-->
+                    <!--</tr>-->
+                <!--{% endfor %}-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+        <!--<div class="span5">-->
+            <!--<h2>Most Recent</h2>-->
+            <!--<table class="table table-striped">-->
+                <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>Recipe</th>-->
+                        <!--<th>Added</th>-->
+                    <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--{% for recipe in recent_recipes %}-->
+                    <!--<tr>-->
+                        <!--<td>{{recipe.title}}</td>-->
+                        <!--<td>{{recipe.added|date:"m/d/y"}}</td>-->
+                        <!--<td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>-->
+                    <!--</tr>-->
+                <!--{% endfor %}-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+    <!--</div>-->
+
 </div>
 
-<div class="row" style="padding-top:20px;">
-    <div class="span5">
-        <h2>Most Frequently Made</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Recipe</th>
-                    <th>Times Made</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for recipe in popular_recipes %}
-                <tr>
-                    <td>{{recipe.title}}</td>
-                    <td>{{recipe.made_count}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="span5">
-        <h2>Most Recent</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Recipe</th>
-                    <th>Added</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for recipe in recent_recipes %}
-                <tr>
-                    <td>{{recipe.title}}</td>
-                    <td>{{recipe.added|date:"m/d/y"}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="./add/{{recipe.id}}?next={{request.path}}">Add to Menu</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-</div>
 <div class="modal-footer">
 </div>
