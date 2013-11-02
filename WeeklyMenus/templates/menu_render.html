@@ -2,7 +2,7 @@
 {% for md in menu_dict|dictsort:"date" %}
 
     <div class="row">
-        <div class="span12 text-left meal-date" style='border-bottom:1px;padding-bottom:5px;padding-top:10px;'>
+        <div class="span12 text-left meal-date">
             <h3>{{ md.date|date:"D, M d Y" }}</h3>
         </div>
     </div>
@@ -12,7 +12,7 @@
                 <h4>{{meal.meal_type}}</h4>
                 {% if meal.items != None %}
                     {% for item in meal.items %}
-                    <div style="width:100%; margin-top:5px;">
+                    <div style="margin-top:5px;">
                         <div class="media clearfix">
                             <div class="pull-left" href="#">
                                 {% thumbnail item.recipe.image "50x50" crop="center" as im %}
@@ -31,7 +31,7 @@
             </div>
         {% endfor %}
     </div>
-    <div class="row">
+    <div class="row button-row">
         {% for meal in md.items %}
             <div class="span4">
             {% if meal.items == None %}
