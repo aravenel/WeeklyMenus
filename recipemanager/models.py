@@ -35,6 +35,7 @@ class Recipe(models.Model):
     rating = models.IntegerField(choices=RATING_CHOICES, blank=True, null=True)
     content = models.TextField(null=True,blank=True)
     image = models.URLField(max_length=400, null=True, blank=True)
+    manually_edited = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title

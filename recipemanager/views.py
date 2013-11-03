@@ -99,6 +99,7 @@ def edit(request, recipe_id):
         if recipe_form.is_valid():
             updated_recipe = recipe_form.save(commit=False)
             updated_recipe.owner = request.user
+            updated_recipe.manually_edited = True
             updated_recipe.save()
             recipe_form.save_m2m()
             return redirect('/recipes/%s' % recipe_id)
