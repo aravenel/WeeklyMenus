@@ -1,9 +1,9 @@
 from models import Recipe
 from celery.task import task
 from celery.utils.log import get_task_logger
-from django.conf import settings
 import requests
-import logging
+import lxml
+import readability
 
 log = get_task_logger(__name__)
 
@@ -30,7 +30,7 @@ def clean_url_parameters(url):
 
     return cleaned_url
 
-@task(rate_limit=1) #Rate limit of 1/sec due to free version of diffbot API
+@task
 def add_recipe(url, title, owner, source, hash, tags):
     """Add a recipe to the database. Eventually will be extended to fetch images,
     parse recipe contents, etc."""
@@ -41,36 +41,28 @@ def add_recipe(url, title, owner, source, hash, tags):
         log.debug('New recipe found--adding.')
         url = clean_url_parameters(url)
 
-        #Get recipe contents (scrape!)
-        #HTML to be saved as content of recipe, as parsed by Readability
-        # readable_article = Document(html).summary(html_partial=True)
-        log.debug('Scraping contents from diffbot')
-        payload = {'url': url, 'token': settings.DIFFBOT_API_KEY, 'html': True}
-        r = requests.get('http://www.diffbot.com/api/article', params=payload)
-        log.debug('Diffbot returned status %s' % r.status_code)
+        log.debug('Scraping recipe content via readability')
+        r = requests.get(url)
+        log.debug("Requests returned status code of %s" % r.status_code)
+
         if r.status_code == 200:
-            diffbot = r.json()
-            content = diffbot['text']
-            primary_image_href = None
-            if 'media' in diffbot.keys():
-                images = [media for media in diffbot['media'] if media['type'] == 'image']
+            #Parse with readability
+            read = readability.Document(r.text)
+            content = read.summary(True)
 
-                #Get primary image
-                for image in images:
-                    #See if anything has primary flag set
-                    if 'primary' in image.keys():
-                        if image['primary'] in [True, 'true']:
-                            primary_image_href = image['link']
-
-                #If primary flag not set, just get first returned image
-                if not primary_image_href:
-                    primary_image_href = images[0]['link']
+            #Pass to lxml to get first image
+            l = lxml.html.fromstring(content)
+            images = l.cssselect('img')
+            log.debug("Found %s images" % len(images))
+            if len(images) > 0:
+                primary_image_href = images[0].get('src')
             else:
                 primary_image_href = None
         else:
-            log.warning('Diffbot returned status of %s for recipe with URL %s. Cannot scrape.' % (r.status_code, url))
+            # Cannot get recipe--probably dead link
             content = None
             primary_image_href = None
+
 
         #Save recipe
         recipe = Recipe(
@@ -84,4 +76,5 @@ def add_recipe(url, title, owner, source, hash, tags):
                 )
         recipe.save()
         recipe.tags.add(*tags)
+        log.debug("Recipe saved: %s" % title)
     return True

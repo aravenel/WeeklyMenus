@@ -19,6 +19,7 @@ requests
 wsgiref==0.1.2
 django-taggit-templatetags
 readability-lxml
+cssselect
 BeautifulSoup
 gunicorn
 pillow
