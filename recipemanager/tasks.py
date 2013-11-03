@@ -4,6 +4,7 @@ from celery.utils.log import get_task_logger
 import requests
 import lxml
 import readability
+import urlparse
 
 log = get_task_logger(__name__)
 
@@ -55,7 +56,9 @@ def add_recipe(url, title, owner, source, hash, tags):
             images = l.cssselect('img')
             log.debug("Found %s images" % len(images))
             if len(images) > 0:
-                primary_image_href = images[0].get('src')
+                #Make sure it's not a relative url!
+                img_href = images[0].get('src')
+                primary_image_href = urlparse.urljoin(url, img_href)
             else:
                 primary_image_href = None
         else:
@@ -63,6 +66,7 @@ def add_recipe(url, title, owner, source, hash, tags):
             content = None
             primary_image_href = None
 
+        log.debug('Image href is %s' % primary_image_href)
 
         #Save recipe
         recipe = Recipe(
