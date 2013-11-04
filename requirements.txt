@@ -27,3 +27,4 @@ sorl-thumbnail
 pytz>=2013b
 psycopg2
 #django-extensions
+django-registration

@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'djcelery',
     'taggit_templatetags',
     'debug_toolbar',
-    'sorl.thumbnail'
+    'sorl.thumbnail',
+    'registration',
 )
 
 MIDDLEWARE_CLASSES = (

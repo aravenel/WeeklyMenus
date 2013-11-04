@@ -70,8 +70,8 @@ $(document).ready(function(){
             $('.reciperow:last .thumbnails').append(recipe_html_modal);
 
             //Update the base page
-            var recipe_html_base = '<div class="row" style="margin-top:5px;">' +
-                '<div class="media"><div class="pull-left">'+
+            var recipe_html_base = '<div style="margin-top:5px;">' +
+                '<div class="media clearfix"><div class="pull-left">'+
                 '<img src="'+recipe_data.thumbnail_small+'" width="50" height="50" \\>'+
                 '</div><div class="media-body">'+recipe_data.title+'</div></div></div>';
             $(base_id).append(recipe_html_base);

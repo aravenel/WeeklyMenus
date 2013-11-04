@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block main_content %}
+
+    {% if form.errors %}
+        <div class="alert alert-errors">Please correct the errors below: {{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <h2>Register for an account on Ravenous</h>
+
+    <form class="form-horizontal" method="post" action="">
+        {% csrf_token %}
+        <div class="control-group">
+            <label class="control-label" for="id_username">Username</label>
+            <div class="controls">
+                <input type="text" id="username" placeholder="Username">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="id_email">Email Address</label>
+            <div class="controls">
+                <input type="text" id="email" placeholder="Email address">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="id_password1">Password</label>
+            <div class="controls">
+                <input type="password" id="password1" placeholder="Password">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="id_password2">Password Confirmation</label>
+            <div class="controls">
+                <input type="password" id="password2" placeholder="Password (again)">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn">Register</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

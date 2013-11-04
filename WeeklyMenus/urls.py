@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^recipes/', include('recipemanager.urls')),
     url(r'^menus/', include('menumanager.urls')),
     url(r'^feeds/', include('feedmanager.urls')),
+    url(r'^accounts/', include('registration.backends.default.urls')),
 
     #taggit_autocomplete urls
     (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
@@ -21,8 +22,8 @@ urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     #Login form
-    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login'),
+    #(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    #(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
