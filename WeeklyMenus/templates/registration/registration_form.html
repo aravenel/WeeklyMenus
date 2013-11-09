@@ -10,33 +10,26 @@
     {% endif %}
 
     <h2>Register for an account on Ravenous</h>
-
+        
     <form class="form-horizontal" method="post" action="">
         {% csrf_token %}
-        <div class="control-group">
-            <label class="control-label" for="id_username">Username</label>
-            <div class="controls">
-                <input type="text" id="username" placeholder="Username">
+
+        {% for field in form %}
+            <div class="control-group {% if field.errors %}error{% endif %}">
+                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="controls">
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="help-inline">
+                            {% for error in field.errors %}
+                                {{ error }}<br />
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="id_email">Email Address</label>
-            <div class="controls">
-                <input type="text" id="email" placeholder="Email address">
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="id_password1">Password</label>
-            <div class="controls">
-                <input type="password" id="password1" placeholder="Password">
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="id_password2">Password Confirmation</label>
-            <div class="controls">
-                <input type="password" id="password2" placeholder="Password (again)">
-            </div>
-        </div>
+        {% endfor %}
+
 
         <div class="control-group">
             <div class="controls">

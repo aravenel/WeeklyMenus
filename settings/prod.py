@@ -68,6 +68,15 @@ DIFFBOT_API_KEY = DIFFBOT_API_KEY
 MEDIA_ROOT = '/srv/www/menus-prod/media'
 MEDIA_URL = '/media/'
 
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'testing@example.com'
+
+REGISTRATION_OPEN = False
+
 # LOGGING['handlers']['logfile']['filename'] = r'/srv/www/menus-dev/http/logs/logfile.log'
 # LOGGING['handlers']['debug_logfile']['filename'] = r'/srv/www/menus-dev/http/logs/debug_logfile.log'
 # LOGGING['handlers']['default_logger']['filename'] = r'/srv/www/menus-dev/http/logs/default.log'

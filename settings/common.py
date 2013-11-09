@@ -338,3 +338,5 @@ VALID_RECIPE_SORTS = {
 #Valid number of recipes per page
 VALID_RECIPES_PERPAGE = [20, 40, 100]
 
+#Days before account expires
+ACCOUNT_ACTIVATION_DAYS = 14

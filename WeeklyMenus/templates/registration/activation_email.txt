@@ -1,0 +1,5 @@
+Someone, hopefully you, signed up for an account at Ravenous using this email address. To activate your account, click the link below, or paste it into your browser's address bar:
+
+http://ravenous.alexravenel.com/accounts/activate/{{ activation_key }}
+
+If not activated, this account will expire automatically in {{ expiration_days }} days.
