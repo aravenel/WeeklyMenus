@@ -1,15 +1,8 @@
 from fabric.api import *
 #from fabric.operations import *
 import os
-from sys import exit
+from sys import exit, path
 from socket import gethostname
-
-try:
-    # from settings.passwords_staging import DB_NAME, DB_USER, DB_PASS
-    from settings.passwords_staging import *
-except ImportError:
-    print "Cannot import passwords_staging file."
-    exit()
 
 #
 #   TODO
@@ -22,6 +15,8 @@ key_locations = {
     'glaurung': r'/home/ravenel/.ssh/id_rsa',
 }
 
+#Insert current dir into path so we can do imports
+path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
 
 ##################################################
@@ -42,6 +37,7 @@ def staging():
     env.supervisord_group = 'menus-staging'
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
+    env.pw = import_pwfile(env.environment)
 
 
 def vagrant():
@@ -61,6 +57,7 @@ def vagrant():
         env.key_filename = ssh_keyfile.split()[1].replace(r'/', '\\').replace('\"', '')
     else:
         env.key_filename = ssh_keyfile.split()[1].replace('\"', '')
+    env.pw = import_pwfile(env.environment)
 
 
 def prod():
@@ -79,10 +76,9 @@ def prod():
         env.supervisord_group = 'menus-staging'
         env.user = 'ravenel'
         env.key_filename = key_locations[gethostname()]
+        env.pw = import_pwfile(env.environment)
     else:
         exit()
-
-
 
 
 ##################################################
@@ -90,6 +86,17 @@ def prod():
 #   HELPER FUNCTIONS
 #
 ##################################################
+
+def import_pwfile(environment):
+    try:
+        # from settings.passwords_staging import DB_NAME, DB_USER, DB_PASS
+        #from settings.passwords_staging import *
+        return __import__("settings.passwords_%s" % environment)
+    except ImportError, e:
+        print "Cannot import passwords file:"
+        print e
+        print '\nCurrent import paths:\n%s' % '\n'.join(p for p in path)
+        exit()
 
 def merge():
     local('git checkout %s' % env.repo)
@@ -224,7 +231,7 @@ def provision():
     setup_virtualenv(env.venv_dir, env.venv_name)
 
     #setup pgsql databases
-    create_database(DB_USER, DB_PASSWORD, DB_NAME)
+    create_database(env.pw.DB_USER, env.pw.DB_PASSWORD, env.pw.DB_NAME)
 
     #do ln last in case it fails on vagrant
     with settings(warn_only=True):
