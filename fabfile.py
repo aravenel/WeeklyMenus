@@ -8,8 +8,8 @@ import pdb
 
 #
 #   TODO
-#   -Make passwords file dependent on environment (dev vs staging vs vagrant)
 #   -Make gunicorn conf dependent on environment
+#   -Update nginx/supervisord config to use app-specific config files
 #
 
 key_locations = {
@@ -72,7 +72,7 @@ def prod():
         env.hosts = ['www.alexravenel.com']
         env.code_dir = '/srv/www/menus-prod'
         env.repo = 'master'
-        env.venv_dir = '/home/vagrant/.venvs'
+        env.venv_dir = '/home/ravenel/.venvs'
         env.venv_name = 'menus-prod'
         env.merges_from = 'develop'
         env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
@@ -167,18 +167,19 @@ def push_config_files(environment):
     """Push config files (nginx, supervisord) to host"""
     #config files
     if environment == 'vagrant':
-        put('settings/config/nginx-%s.conf' % environment, '/etc/nginx/nginx.conf', use_sudo=True)
-        put('settings/config/supervisord-%s.conf' % environment, '/etc/supervisor/supervisord.conf', use_sudo=True)
+        put('settings/config/nginx-%s.conf' % environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
+        sudo('ln -s /etc/nginx/sites-available/menus-%s.conf /etc/nginx/sites-enabled/menus-%s.conf' % (env.environment, env.environment))
+        put('settings/config/supervisord-%s.conf' % environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
         #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
         with settings(warn_only=True):
             sudo('service nginx restart')
             sudo('service supervisor restart')
 
-def setup_virtualenv(venv_dir, venv_name):
+def setup_virtualenv():
     """Setup virtual environments on the host"""
-    run('mkdir -p %s' % venv_dir)
+    run('mkdir -p %s' % env.venv_dir)
     run('echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.profile')
-    run('mkvirtualenv %s' % venv_name)
+    run('mkvirtualenv %s' % env.venv_name)
 
 def create_database(user, password, name):
     """Create database and user"""
@@ -260,7 +261,7 @@ def provision():
     push_config_files(env.environment)
 
     #setup virtualenv
-    setup_virtualenv(env.venv_dir, env.venv_name)
+    setup_virtualenv()
 
     #setup pgsql databases
     create_database(env.pw.DB_USER, env.pw.DB_PASSWORD, env.pw.DB_NAME)
