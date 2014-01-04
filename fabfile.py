@@ -72,7 +72,7 @@ def prod():
         env.hosts = ['www.alexravenel.com']
         env.code_dir = '/srv/www/menus-prod'
         env.repo = 'master'
-        env.venv_dir = '/home/ravenel/.venvs'
+        env.venv_dir = '/home/ravenel/.virtualenvs'
         env.venv_name = 'menus-prod'
         env.merges_from = 'develop'
         env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
@@ -188,20 +188,20 @@ def create_database(user, password, name):
         sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\'"' % (user, password), user='postgres')
         sudo('psql -c "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\' LC_CTYPE=\'en_US.utf8\' LC_COLLATE=\'en_US.utf8\' TEMPLATE=template0"' % (name, user), user='postgres')
 
-def update_code(code_dir, repo):
+def update_code():
     """Get new code on the host"""
-    with cd(code_dir):
+    with cd(env.code_dir):
         #sudo('git pull')
         #sudo('git checkout %s' % env.repo)
         print "Checking out code...",
         run('git reset --hard HEAD')
-        run('git checkout %s' % repo)
+        run('git checkout %s' % env.repo)
         run('git pull')
 
-def push_passwords(code_dir, environment):
+def push_passwords():
     """Push password files to host"""
-    with cd(code_dir):
-        settings_file = os.path.join('settings', 'passwords_%s.py' % environment)
+    with cd(env.code_dir):
+        settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
         if os.path.isfile(settings_file):
             put(settings_file, 'settings')
         else:
@@ -258,7 +258,7 @@ def provision():
     setup_folders2()
 
     #Push over the config files
-    push_config_files(env.environment)
+    #push_config_files(env.environment)
 
     #setup virtualenv
     setup_virtualenv()
@@ -280,10 +280,10 @@ def deploy():
 
     if env.environment != 'vagrant':
         #Checkout new code
-        update_code(env.code_dir, env.repo)
+        update_code()
 
         #Push passwords file to host
-        push_passwords(code_dir, env.environment)
+        push_passwords()
 
     prepare_django()
 
