@@ -4,6 +4,8 @@ import os
 from sys import exit, path
 from socket import gethostname
 
+import pdb
+
 #
 #   TODO
 #   -Make passwords file dependent on environment (dev vs staging vs vagrant)
@@ -37,13 +39,14 @@ def staging():
     env.supervisord_group = 'menus-staging'
     env.user = 'ravenel'
     env.key_filename = key_locations[gethostname()]
-    env.pw = import_pwfile(env.environment)
+    env.pw = import_pwfile()
 
 
 def vagrant():
     env.environment = 'vagrant'
     env.hosts = ['127.0.0.1:2222']
-    env.code_dir = '/vagrant'
+    #env.code_dir = '/vagrant'
+    env.code_dir = '/srv/www/menus-dev'
     env.repo = 'develop'
     env.venv_dir = '/home/vagrant/.venvs'
     env.venv_name = 'menus-dev'
@@ -57,7 +60,7 @@ def vagrant():
         env.key_filename = ssh_keyfile.split()[1].replace(r'/', '\\').replace('\"', '')
     else:
         env.key_filename = ssh_keyfile.split()[1].replace('\"', '')
-    env.pw = import_pwfile(env.environment)
+    env.pw = import_pwfile()
 
 
 def prod():
@@ -76,7 +79,7 @@ def prod():
         env.supervisord_group = 'menus-staging'
         env.user = 'ravenel'
         env.key_filename = key_locations[gethostname()]
-        env.pw = import_pwfile(env.environment)
+        env.pw = import_pwfile()
     else:
         exit()
 
@@ -87,11 +90,11 @@ def prod():
 #
 ##################################################
 
-def import_pwfile(environment):
+def import_pwfile():
     try:
         # from settings.passwords_staging import DB_NAME, DB_USER, DB_PASS
         #from settings.passwords_staging import *
-        return __import__("settings.passwords_%s" % environment)
+        return __import__("settings.passwords_%s" % env.environment, fromlist=['settings.passwords_%s' % env.environment])
     except ImportError, e:
         print "Cannot import passwords file:"
         print e
@@ -137,6 +140,27 @@ def setup_folders(run_user):
     sudo('chmod -R 777 /srv/www/menus-dev/media')
     # run('mkdir -p ~/apps/menus-staging')
 
+def setup_folders2(run_user):
+    """Setup and permission folders"""
+    #make directories
+
+    sudo('mkdir -p %s' % env.code_dir)
+    sudo('mkdir -p %s' % os.path.join(env.code_dir, 'logs'))
+    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'logs')))
+    #FIX THIS FOR REAL
+    sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'logs'))
+
+    sudo('mkdir -p %s' % os.path.join(env.code_dir, 'http', 'logs'))
+    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'http', 'logs')))
+    #FIX THIS FOR REAL
+    sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'http', 'logs'))
+
+    sudo('mkdir -p %s' % os.path.join(env.code_dir, 'media'))
+    sudo('mkdir -p %s' % os.path.join(env.code_dir, 'media', 'cache'))
+    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'media')))
+    #FIX THIS FOR REAL
+    sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'media'))
+
 def push_config_files(environment):
     """Push config files (nginx, supervisord) to host"""
     #config files
@@ -181,30 +205,33 @@ def push_passwords(code_dir, environment):
             print "Settings file %s does not exist. Cannot copy to host." % settings_file
         print "Done."
 
-def prepare_django(code_dir, venv_name, environment):
+def prepare_django():
     """Do django stuff--install python packages, sync db, run migrations, collect static"""
-    with cd(code_dir):
-        with prefix('workon %s' % venv_name):
+    with cd(env.code_dir):
+        with prefix('workon %s' % env.venv_name):
             #Make sure all packages are up to date
-            sudo('pip install -r requirements.txt')
+            if env.environment == 'vagrant':
+                sudo('pip install -r /vagrant/requirements.txt')
+            else:
+                sudo('pip install -r requirements.txt')
 
             #Sync DB
             print "Syncing DB..."
-            run('python manage.py syncdb --settings=settings.%s' % (environment))
+            run('python manage.py syncdb --settings=settings.%s' % (env.environment))
             print "Done."
 
             #Run South migrations
             print "Running South migrations..."
             #What. The. Fuck. Why do I have to run them indiv before --all?
-            run('python manage.py migrate recipemanager --settings=settings.%s' % (environment))
-            run('python manage.py migrate menumanager --settings=settings.%s' % (environment))
-            run('python manage.py migrate feedmanager --settings=settings.%s' % (environment))
-            run('python manage.py migrate --all --settings=settings.%s' % (environment))
+            run('python manage.py migrate recipemanager --settings=settings.%s' % (env.environment))
+            run('python manage.py migrate menumanager --settings=settings.%s' % (env.environment))
+            run('python manage.py migrate feedmanager --settings=settings.%s' % (env.environment))
+            run('python manage.py migrate --all --settings=settings.%s' % (env.environment))
             print "Done."
 
             #Collect static
             print "Collecting static files..."
-            sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (environment))
+            sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
             print "Done."
 
 
@@ -222,7 +249,8 @@ def provision():
     install_prereqs()
 
     #Setup folders
-    setup_folders(env.run_user)
+    #setup_folders(env.run_user)
+    setup_folders2(env.run_user)
 
     #Push over the config files
     push_config_files(env.environment)
@@ -236,7 +264,7 @@ def provision():
     #do ln last in case it fails on vagrant
     with settings(warn_only=True):
         if env.environment == 'vagrant':
-            sudo('ln -s /vagrant /srv/www/menus-dev/http')
+            sudo('ln -s /vagrant %s' % os.path.join(env.code_dir, 'http'))
 
     #Start supervisor
     sudo('service supervisor start')
@@ -252,7 +280,7 @@ def deploy():
         #Push passwords file to host
         push_passwords(code_dir, env.environment)
 
-    prepare_django(env.code_dir, env.venv_name, env.environment)
+    prepare_django()
 
     #Restart supervisord groups
     print "Restarting supervisord programs..."
