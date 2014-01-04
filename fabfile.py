@@ -66,8 +66,8 @@ def vagrant():
 def prod():
     print "\n\nWARNING! You are about to deploy to production!\n\n"
     print "If you wish to continue, enter Yes:"
-    ans = raw_input()
-    if ans.upper in ['YES']:
+    ans = prompt("WARNING! About to deploy to prod. To continue, enter \'yes\':")
+    if ans.upper() in ['YES']:
         env.environment = 'prod'
         env.hosts = ['www.alexravenel.com']
         env.code_dir = '/srv/www/menus-prod'
@@ -78,9 +78,11 @@ def prod():
         env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
         env.supervisord_group = 'menus-staging'
         env.user = 'ravenel'
+        env.run_user = 'www-data'
         env.key_filename = key_locations[gethostname()]
         env.pw = import_pwfile()
     else:
+        print "Exiting."
         exit()
 
 
@@ -140,24 +142,24 @@ def setup_folders(run_user):
     sudo('chmod -R 777 /srv/www/menus-dev/media')
     # run('mkdir -p ~/apps/menus-staging')
 
-def setup_folders2(run_user):
+def setup_folders2():
     """Setup and permission folders"""
     #make directories
 
     sudo('mkdir -p %s' % env.code_dir)
     sudo('mkdir -p %s' % os.path.join(env.code_dir, 'logs'))
-    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'logs')))
+    sudo('chown %s %s' %(env.run_user, os.path.join(env.code_dir, 'logs')))
     #FIX THIS FOR REAL
     sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'logs'))
 
     sudo('mkdir -p %s' % os.path.join(env.code_dir, 'http', 'logs'))
-    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'http', 'logs')))
+    sudo('chown %s %s' %(env.run_user, os.path.join(env.code_dir, 'http', 'logs')))
     #FIX THIS FOR REAL
     sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'http', 'logs'))
 
     sudo('mkdir -p %s' % os.path.join(env.code_dir, 'media'))
     sudo('mkdir -p %s' % os.path.join(env.code_dir, 'media', 'cache'))
-    sudo('chown %s %s' %(run_user, os.path.join(env.code_dir, 'media')))
+    sudo('chown %s %s' %(env.run_user, os.path.join(env.code_dir, 'media')))
     #FIX THIS FOR REAL
     sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'media'))
 
@@ -207,13 +209,15 @@ def push_passwords(code_dir, environment):
 
 def prepare_django():
     """Do django stuff--install python packages, sync db, run migrations, collect static"""
-    with cd(env.code_dir):
+    if env.environment == 'vagrant':
+        code_dir = '/vagrant'
+    else:
+        code_dir = env.code_dir
+
+    with cd(code_dir):
         with prefix('workon %s' % env.venv_name):
             #Make sure all packages are up to date
-            if env.environment == 'vagrant':
-                sudo('pip install -r /vagrant/requirements.txt')
-            else:
-                sudo('pip install -r requirements.txt')
+            sudo('pip install -r requirements.txt')
 
             #Sync DB
             print "Syncing DB..."
@@ -250,7 +254,7 @@ def provision():
 
     #Setup folders
     #setup_folders(env.run_user)
-    setup_folders2(env.run_user)
+    setup_folders2()
 
     #Push over the config files
     push_config_files(env.environment)
