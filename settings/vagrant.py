@@ -28,7 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.sessions',
     'crispy_forms',
-    'ajax_select',
+    #'ajax_select',
     'taggit',
     'taggit_autosuggest',
     'south',

@@ -48,7 +48,8 @@ def vagrant():
     #env.code_dir = '/vagrant'
     env.code_dir = '/srv/www/menus-dev'
     env.repo = 'develop'
-    env.venv_dir = '/home/vagrant/.venvs'
+    env.repo_url = 'https://github.com/aravenel/WeeklyMenus.git'
+    env.venv_dir = '/home/vagrant/.virtualenvs'
     env.venv_name = 'menus-dev'
     env.user = 'vagrant'
     env.run_user = 'www-data'
@@ -72,6 +73,7 @@ def prod():
         env.hosts = ['www.alexravenel.com']
         env.code_dir = '/srv/www/menus-prod'
         env.repo = 'master'
+        env.repo_url = 'https://github.com/aravenel/WeeklyMenus.git'
         env.venv_dir = '/home/ravenel/.virtualenvs'
         env.venv_name = 'menus-prod'
         env.merges_from = 'develop'
@@ -163,13 +165,13 @@ def setup_folders2():
     #FIX THIS FOR REAL
     sudo('chmod -R 777 %s' % os.path.join(env.code_dir, 'media'))
 
-def push_config_files(environment):
+def push_config_files():
     """Push config files (nginx, supervisord) to host"""
     #config files
-    if environment == 'vagrant':
-        put('settings/config/nginx-%s.conf' % environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
+    if env.environment == 'vagrant':
+        put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
         sudo('ln -s /etc/nginx/sites-available/menus-%s.conf /etc/nginx/sites-enabled/menus-%s.conf' % (env.environment, env.environment))
-        put('settings/config/supervisord-%s.conf' % environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
+        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
         #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
         with settings(warn_only=True):
             sudo('service nginx restart')
@@ -191,19 +193,22 @@ def create_database(user, password, name):
 def update_code():
     """Get new code on the host"""
     with cd(env.code_dir):
-        #sudo('git pull')
-        #sudo('git checkout %s' % env.repo)
-        print "Checking out code...",
-        run('git reset --hard HEAD')
-        run('git checkout %s' % env.repo)
-        run('git pull')
+        with settings(warn_only=True):
+            #sudo('git pull')
+            #sudo('git checkout %s' % env.repo)
+            print "Checking out code...",
+            result = sudo('git clone %s http' % env.repo_url)
+            if not result.return_code == 0:
+                run('git reset --hard HEAD')
+                run('git checkout %s' % env.repo)
+                run('git pull')
 
 def push_passwords():
     """Push password files to host"""
     with cd(env.code_dir):
         settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
         if os.path.isfile(settings_file):
-            put(settings_file, 'settings')
+            put(settings_file, 'settings', use_sudo=True)
         else:
             print "Settings file %s does not exist. Cannot copy to host." % settings_file
         print "Done."
@@ -258,7 +263,7 @@ def provision():
     setup_folders2()
 
     #Push over the config files
-    #push_config_files(env.environment)
+    push_config_files()
 
     #setup virtualenv
     setup_virtualenv()
