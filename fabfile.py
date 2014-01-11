@@ -208,6 +208,10 @@ def update_code():
                     sudo('git checkout %s' % env.repo)
                     sudo('git pull')
 
+def push_code():
+    update_code()
+    sudo('supervisorctl restart %s' % env.supervisord_group)
+
 def push_passwords():
     """Push password files to host"""
     with cd(env.git_dir):
