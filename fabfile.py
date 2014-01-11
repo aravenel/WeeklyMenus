@@ -168,14 +168,13 @@ def setup_folders2():
 def push_config_files():
     """Push config files (nginx, supervisord) to host"""
     #config files
-    if env.environment == 'vagrant':
-        put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
-        sudo('ln -s /etc/nginx/sites-available/menus-%s.conf /etc/nginx/sites-enabled/menus-%s.conf' % (env.environment, env.environment))
-        put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
-        #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
-        with settings(warn_only=True):
-            sudo('service nginx restart')
-            sudo('service supervisor restart')
+    put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
+    sudo('ln -s /etc/nginx/sites-available/menus-%s.conf /etc/nginx/sites-enabled/menus-%s.conf' % (env.environment, env.environment))
+    put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
+    #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
+    with settings(warn_only=True):
+        sudo('service nginx restart')
+        sudo('service supervisor restart')
 
 def setup_virtualenv():
     """Setup virtual environments on the host"""
