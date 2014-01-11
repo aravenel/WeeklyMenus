@@ -53,6 +53,132 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s',
+            'datefmt': '%m-%d-%Y %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'logfile': {
+            'level': 'INFO',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'logfile.log'),
+            #'filename': '/srv/www/menus-dev/logs/logfile.log',
+            'filename': '/srv/www/menus-prod/http/logs/logfile.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 3,
+            'formatter': 'standard'
+        },
+        'debug_logfile': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'debug_logfile.log'),
+            #'filename': '/srv/www/menus-dev/logs/debug_logfile.log',
+            'filename': '/srv/www/menus-prod/http/logs/debug_logfile.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'standard'
+        },
+        'default_logger': {
+            'level': 'WARNING',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/default.log',
+            'filename': '/srv/www/menus-prod/http/logs/default.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
+        'celery_logger': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/celery.log',
+            'filename': '/srv/www/menus-prod/http/logs/celery.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
+        'feedmanager_tasks': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/celery.log',
+            'filename': '/srv/www/menus-prod/http/logs/feedmanager_tasks.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
+        'recipemanager_tasks': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
+            #'filename': '/srv/www/menus-dev/logs/celery.log',
+            'filename': '/srv/www/menus-prod/http/logs/recipemanager_tasks.log',
+            'maxBytes': 1024*1024*5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default_logger'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['logfile'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'feedmanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'recipemanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'menumanager': {
+            'handlers': ['logfile', 'debug_logfile'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'feedmanager.tasks': {
+            'handlers': ['feedmanager_tasks'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'recipemanager.tasks': {
+            'handlers': ['recipemanager_tasks'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'celery': {
+            'handlers': ['celery_logger'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+
 DEBUG = False
 
 #Sorl-thumbnail settings

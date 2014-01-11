@@ -1,4 +1,5 @@
 from fabric.api import *
+from fabric.contrib.files import exists
 #from fabric.operations import *
 import os
 from sys import exit, path
@@ -72,6 +73,7 @@ def prod():
         env.environment = 'prod'
         env.hosts = ['www.alexravenel.com']
         env.code_dir = '/srv/www/menus-prod'
+        env.git_dir = os.path.join(env.code_dir, 'WeeklyMenus')
         env.repo = 'master'
         env.repo_url = 'https://github.com/aravenel/WeeklyMenus.git'
         env.venv_dir = '/home/ravenel/.virtualenvs'
@@ -168,8 +170,11 @@ def setup_folders2():
 def push_config_files():
     """Push config files (nginx, supervisord) to host"""
     #config files
-    put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/sites-available/menus-%s.conf' % env.environment, use_sudo=True)
-    sudo('ln -s /etc/nginx/sites-available/menus-%s.conf /etc/nginx/sites-enabled/menus-%s.conf' % (env.environment, env.environment))
+    put('settings/config/nginx-%s.conf' % env.environment, '/etc/nginx/sites-available/menus.alexravenel.com', use_sudo=True)
+    sudo('chown www-data /etc/nginx/sites-available/menus.alexravenel.com')
+    sudo('chmod +x /etc/nginx/sites-available/menus.alexravenel.com')
+    if not exists('/etc/nginx/sites-enabled/menus.alexravenel.com'):
+        sudo('ln -s /etc/nginx/sites-available/menus.alexravenel.com /etc/nginx/sites-enabled/menus.alexravenel.com')
     put('settings/config/supervisord-%s.conf' % env.environment, '/etc/supervisor/conf.d/menus-%s.conf' % env.environment, use_sudo=True)
     #put('settings/config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     with settings(warn_only=True):
@@ -196,18 +201,19 @@ def update_code():
             #sudo('git pull')
             #sudo('git checkout %s' % env.repo)
             print "Checking out code...",
-            result = sudo('git clone %s http' % env.repo_url)
+            result = sudo('git clone %s' % env.repo_url)
             if not result.return_code == 0:
-                run('git reset --hard HEAD')
-                run('git checkout %s' % env.repo)
-                run('git pull')
+                with cd(env.git_dir):
+                    run('git reset --hard HEAD')
+                    run('git checkout %s' % env.repo)
+                    run('git pull')
 
 def push_passwords():
     """Push password files to host"""
-    with cd(env.code_dir):
+    with cd(env.git_dir):
         settings_file = os.path.join('settings', 'passwords_%s.py' % env.environment)
         if os.path.isfile(settings_file):
-            put(settings_file, 'settings', use_sudo=True)
+            put(settings_file, 'passwords_%s.py' % env.environment, use_sudo=True)
         else:
             print "Settings file %s does not exist. Cannot copy to host." % settings_file
         print "Done."
@@ -217,7 +223,7 @@ def prepare_django():
     if env.environment == 'vagrant':
         code_dir = '/vagrant'
     else:
-        code_dir = env.code_dir
+        code_dir = env.git_dir
 
     with cd(code_dir):
         with prefix('workon %s' % env.venv_name):
