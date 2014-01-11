@@ -203,6 +203,8 @@ DEFAULT_FROM_EMAIL = 'testing@example.com'
 
 REGISTRATION_OPEN = False
 
+ALLOWED_HOSTS = ['.alexravenel.com']
+
 # LOGGING['handlers']['logfile']['filename'] = r'/srv/www/menus-dev/http/logs/logfile.log'
 # LOGGING['handlers']['debug_logfile']['filename'] = r'/srv/www/menus-dev/http/logs/debug_logfile.log'
 # LOGGING['handlers']['default_logger']['filename'] = r'/srv/www/menus-dev/http/logs/default.log'
