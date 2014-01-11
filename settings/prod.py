@@ -102,7 +102,7 @@ LOGGING = {
             'formatter': 'standard'
         },
         'celery_logger': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
             #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
@@ -113,7 +113,7 @@ LOGGING = {
             'formatter': 'standard'
         },
         'feedmanager_tasks': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
             #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
@@ -124,7 +124,7 @@ LOGGING = {
             'formatter': 'standard'
         },
         'recipemanager_tasks': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': None,
             'class': 'logging.handlers.RotatingFileHandler',
             #'filename': os.path.join(os.path.dirname(SITE_ROOT), 'logs', 'default.log'),
