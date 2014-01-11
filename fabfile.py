@@ -80,7 +80,7 @@ def prod():
         env.venv_name = 'menus-prod'
         env.merges_from = 'develop'
         env.python = '/home/ravenel/apps/menus-staging/WeeklyMenus/venv/bin/python',
-        env.supervisord_group = 'menus-staging'
+        env.supervisord_group = 'menus-prod'
         env.user = 'ravenel'
         env.run_user = 'www-data'
         env.key_filename = key_locations[gethostname()]
@@ -204,9 +204,9 @@ def update_code():
             result = sudo('git clone %s' % env.repo_url)
             if not result.return_code == 0:
                 with cd(env.git_dir):
-                    run('git reset --hard HEAD')
-                    run('git checkout %s' % env.repo)
-                    run('git pull')
+                    sudo('git reset --hard HEAD')
+                    sudo('git checkout %s' % env.repo)
+                    sudo('git pull')
 
 def push_passwords():
     """Push password files to host"""
