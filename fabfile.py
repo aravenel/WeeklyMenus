@@ -1,11 +1,9 @@
 from fabric.api import *
 from fabric.contrib.files import exists
-#from fabric.operations import *
-import os
+from fabric.operations import local
 from sys import exit, path
 from socket import gethostname
-
-import pdb
+import os
 
 #
 #   TODO
@@ -198,8 +196,6 @@ def update_code():
     """Get new code on the host"""
     with cd(env.code_dir):
         with settings(warn_only=True):
-            #sudo('git pull')
-            #sudo('git checkout %s' % env.repo)
             print "Checking out code...",
             result = sudo('git clone %s' % env.repo_url)
             if not result.return_code == 0:
@@ -207,10 +203,6 @@ def update_code():
                     sudo('git reset --hard HEAD')
                     sudo('git checkout %s' % env.repo)
                     sudo('git pull')
-
-def push_code():
-    update_code()
-    sudo('supervisorctl restart %s' % env.supervisord_group)
 
 def push_passwords():
     """Push password files to host"""
@@ -253,6 +245,12 @@ def prepare_django():
             sudo('python manage.py collectstatic --noinput --settings=settings.%s' % (env.environment))
             print "Done."
 
+def restart_services():
+    "Restart all the services. Used for when pushing new code."
+    sudo('service nginx restart')
+    sudo('service supervisor restart')
+    sudo('supervisorctl reload')
+    sudo('supervisorctl restart %s:' % env.supervisord_group)
 
 
 ##################################################
@@ -290,9 +288,15 @@ def provision():
 
 
 def deploy():
-    """Deploy code to host"""
+    """Deploy code to host. If not vagrant host, will merge git branches and push to remote.
+    Will not commit code, this must be done manually."""
 
     if env.environment != 'vagrant':
+        #Merge local code to git and push
+        local('git checkout %s' % env.repo)
+        local('git merge %s' % env.merges_from)
+        local('git push origin %s' % env.repo)
+
         #Checkout new code
         update_code()
 
@@ -302,14 +306,4 @@ def deploy():
     prepare_django()
 
     #Restart supervisord groups
-    print "Restarting supervisord programs..."
-    sudo('supervisorctl restart %s:' % env.supervisord_group)
-    print "Done."
-
-    #Restart redis
-    #sudo('service redis-server restart')
-
-    #Restart nginx server
-    #print "Restarting nginx..."
-    #sudo('service nginx restart')
-    #print "Done."
+    restart_services()
