@@ -197,12 +197,14 @@ def update_code():
     with cd(env.code_dir):
         with settings(warn_only=True):
             print "Checking out code...",
-            result = sudo('git clone %s' % env.repo_url)
+            result = sudo('git clone %s && git submodule init && git submodule update' % env.repo_url)
             if not result.return_code == 0:
                 with cd(env.git_dir):
                     sudo('git reset --hard HEAD')
                     sudo('git checkout %s' % env.repo)
                     sudo('git pull')
+                    sudo('git submodule init')
+                    sudo('git submodule update')
 
 def push_passwords():
     """Push password files to host"""
