@@ -298,6 +298,8 @@ def deploy():
         local('git checkout %s' % env.repo)
         local('git merge %s' % env.merges_from)
         local('git push origin %s' % env.repo)
+        #go back to dev branch
+        local('git checkout %s' % env.merges_from)
 
         #Checkout new code
         update_code()
